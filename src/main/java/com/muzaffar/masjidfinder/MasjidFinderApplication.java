@@ -1,4 +1,4 @@
-package com.muzaffar.masjid_finder;
+package com.muzaffar.masjidfinder;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
