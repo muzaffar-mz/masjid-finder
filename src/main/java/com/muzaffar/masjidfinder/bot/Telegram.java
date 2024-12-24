@@ -18,6 +18,6 @@ public class Telegram implements LongPollingSingleThreadUpdateConsumer {
 
     @Override
     public void consume(Update update) {
-
+        System.out.println(update.toString());
     }
 }
