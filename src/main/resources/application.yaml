@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: masjid-finder
+  jackson:
+    default-property-inclusion: non_null
+  liquibase:
+    change-log: classpath:db/changelog/changelog-master.yaml
+  datasource:
+    url: jdbc:postgresql://localhost:5432/masjid_bot
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  debug: true
+
+server:
+  port: 9798
+
+
+telegram:
+  token: 7108258643:AAFinJoZaaw7j2J59kUiop1RDGqrOOBB3R8
+  username: prayer_time_test_bot
