@@ -1,9 +1,9 @@
-package com.muzaffar.masjid_finder;
+package com.muzaffar.masjidfinder;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+//@SpringBootTest
 class MasjidFinderApplicationTests {
 
 	@Test

@@ -6,6 +6,8 @@ import com.muzaffar.masjidfinder.bot.util.KeyboardUtil;
 import com.muzaffar.masjidfinder.bot.util.UpdateUtil;
 import com.muzaffar.masjidfinder.model.LocationDTO;
 import com.muzaffar.masjidfinder.service.masjid.MasjidService;
+import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
+import com.muzaffar.masjidfinder.service.text.TextService;
 import com.muzaffar.masjidfinder.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.botapimethods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendLocation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
@@ -29,33 +30,42 @@ public class UpdateHandlerImpl implements UpdateHandler {
 
     private final UserService userService;
     private final MasjidService masjidService;
+    private final TextService textService;
 
     @Override
-    public SendMessage start(Update update) {
-        var user = userService.getOrSave(user(update));
+    public SendMessage start(Update update, String command) {
+        var user = userService.getOrSaveByTgUserDTO(user(update));
 
-        //TODO the message service
-        final String welcome = "Hurmatli " + user.firstname() + "\\! `Masjid Sari` botimizga xush kelibsiz\\!" +
-                "\nEng yaqin Masjid Sari borish uchun joylashuvni yuboring";
+        var textDTO = textService.getText(command);
 
-        //TODO the getting
-        var message = UpdateUtil.getSendMessage(getChatId(update), welcome, KeyboardUtil.getLocationKB());
-        message.enableMarkdownV2(true);
+        //text supposed to have a placeholder for the username, like so --> Welcome {username}
+        var text = textDTO.text().replace("{username}", user.firstname());
+
+        //TODO the getting sendMessage i DON'T LIKE IT, NEEDS TO BE REFACTORED
+        var message = UpdateUtil.sendMessage(getChatId(update), text, KeyboardUtil.getLocationKB());
+
+        if (textDTO.isFormatted()) {
+            message.enableMarkdownV2(true);
+        }
         return message;
     }
 
     @Override
-    public SendMessage getMasjids(Update update) {
-        final String text = "Iltimos qulay masjidni tanlang:";
+    public List<SendMessage> getMasajid(Update update) {
+        List<SendMessage> result = new ArrayList<>();
+        final var chatId = getChatId(update);
+        final String mainText = "Iltimos qulay masjidni tanlang:";
+        result.add(UpdateUtil.message(chatId, mainText));
 
         final var location = update.getMessage().getLocation();
-        var masjids = masjidService.getMasjidsClosestToLocation(new LocationDTO(location.getLatitude(), location.getLongitude()));
-        return UpdateUtil.inLineKeyboard(getChatId(update), text, KeyboardUtil.getMasjidsKeyboard(masjids));
-    }
-
-    @Override
-    public DeleteMessage deleteMessage(Update update) {
-        return new DeleteMessage(getChatId(update), messageId(update));
+        var masajid = masjidService.getMasajidClosestToLocation(new LocationDTO(location.getLatitude(), location.getLongitude()));
+        for (MasjidDTO masjid : masajid) {
+            final String text = masjid.getNameAndPrayerTimesForBot();
+            var message = UpdateUtil.inLineKeyboard(chatId, text, KeyboardUtil.getMasjidKeyboard(masjid));
+            message.enableMarkdownV2(true);
+            result.add(message);
+        }
+        return result;
     }
 
     @Override

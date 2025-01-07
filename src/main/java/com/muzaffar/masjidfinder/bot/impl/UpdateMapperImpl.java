@@ -29,23 +29,21 @@ public class UpdateMapperImpl implements UpdateMapper {
     public List<PartialBotApiMethod<?>> map(Update update) {
 
         List<PartialBotApiMethod<?>> returnList = new ArrayList<>();
-//        List<SendMessage> returnList = new ArrayList<>();
-        SendMessage sendMessage = null;
+        SendMessage sendMessage;
 
         try {
             if (isMessage(update)) {
-                //nc stands for New Command
-                final var nc = messageCommand(update) != null ? messageCommand(update) : "";
+                final var command = messageCommand(update) != null ? messageCommand(update) : "";
 
-                if (Objects.equals(nc, Command.START.getText())) {
-                    sendMessage =  updateHandler.start(update);
+                if (Objects.equals(command, Command.START.getText())) {
+                    sendMessage =  updateHandler.start(update, command);
                     returnList.add(sendMessage);
                     return returnList;
                 }
 
                 if (hasLocation(update)) {
-                    sendMessage = updateHandler.getMasjids(update);
-                    returnList.add(sendMessage);
+                    var result = updateHandler.getMasajid(update);
+                    returnList.addAll(result);
                     return returnList;
                 }
             }
@@ -54,9 +52,7 @@ public class UpdateMapperImpl implements UpdateMapper {
                 final String newCommand = callbackCommand(update) != null ? callbackCommand(update) : "";
 
                 if (Objects.equals(newCommand, CallbackCommand.SELECTED_MJ_LOCATION.getText())) {
-                    var deleteMessage = updateHandler.deleteMessage(update);
                     var sendLocation = updateHandler.sendMasjidLocation(update);
-                    returnList.add(deleteMessage);
                     returnList.addAll(sendLocation);
                     return returnList;
                 }

@@ -6,7 +6,7 @@ import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
 import java.util.List;
 
 public interface MasjidService {
-    List<MasjidDTO> getMasjidsClosestToLocation(LocationDTO dto);
+    List<MasjidDTO> getMasajidClosestToLocation(LocationDTO dto);
 
     MasjidDTO getMasjid(Long id);
 }

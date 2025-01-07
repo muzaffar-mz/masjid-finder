@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'com.muzaffar.masjid-finder' is invalid and this project uses 'com.muzaffar.masjid_finder' instead.
+* The original package name 'com.muzaffar.masjid-finder' is invalid and this project uses 'com.muzaffar.masjidfinder' instead.
 
 # Getting Started
 

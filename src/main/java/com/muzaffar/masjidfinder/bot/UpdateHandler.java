@@ -8,8 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.util.List;
 
 public interface UpdateHandler {
-    SendMessage start(Update update);
-    SendMessage getMasjids(Update update);
-    DeleteMessage deleteMessage(Update update);
+    SendMessage start(Update update, String command);
+    List<SendMessage> getMasajid(Update update);
     List<PartialBotApiMethod<?>> sendMasjidLocation(Update update);
 }

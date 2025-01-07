@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 
 public class UpdateUtil {
 
-    public static SendMessage getSendMessage(String chatId, String text, ReplyKeyboardMarkup keyboard) {
+    public static SendMessage sendMessage(String chatId, String text, ReplyKeyboardMarkup keyboard) {
         var senMessage = message(chatId, text);
         senMessage.setReplyMarkup(keyboard);
         return senMessage;
@@ -20,12 +20,6 @@ public class UpdateUtil {
                 .replyMarkup(keyboard)
                 .build();
         return sm;
-    }
-
-    public static SendMessage getSendMessage(String chatId, String text, InlineKeyboardMarkup keyboard) {
-        var sendMessage = message(chatId, text);
-        sendMessage.setReplyMarkup(keyboard);
-        return sendMessage;
     }
 
     public static SendMessage message(String chatId, String text) {
@@ -57,12 +51,6 @@ public class UpdateUtil {
             return data.substring(0, index);
         }
         return null;
-    }
-
-    public static Integer messageId(Update update) {
-        return update.hasMessage()
-                ? update.getMessage().getMessageId()
-                : update.getCallbackQuery().getMessage().getMessageId();
     }
 
     public static Long getMasjidId(Update update) {

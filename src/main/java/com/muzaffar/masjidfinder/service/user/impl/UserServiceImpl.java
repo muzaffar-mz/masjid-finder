@@ -1,5 +1,6 @@
 package com.muzaffar.masjidfinder.service.user.impl;
 
+import com.muzaffar.masjidfinder.AccessDeniedException;
 import com.muzaffar.masjidfinder.bot.model.TgUserDTO;
 import com.muzaffar.masjidfinder.domain.entity.User;
 import com.muzaffar.masjidfinder.domain.entity.enums.UserStatus;
@@ -22,14 +23,13 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public UserDTO getOrSave(TgUserDTO dto) {
+    public UserDTO getOrSaveByTgUserDTO(TgUserDTO dto) {
 
         var user = getUserByTgId(dto.telegramId());
 
         if (Objects.nonNull(user)){
             if (user.getStatus() != UserStatus.ACTIVE) {
-                //TODO throw exception
-                return null;
+                throw new AccessDeniedException("Access for the user with Telegram id: [%s] is denied".formatted(dto.telegramId()));
             }
 
             return userMapper.toUserDTO(user);
