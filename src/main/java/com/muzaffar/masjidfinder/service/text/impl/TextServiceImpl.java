@@ -1,5 +1,6 @@
 package com.muzaffar.masjidfinder.service.text.impl;
 
+import com.muzaffar.masjidfinder.bot.enums.Command;
 import com.muzaffar.masjidfinder.service.text.TextService;
 import com.muzaffar.masjidfinder.service.text.model.TextDTO;
 import org.springframework.stereotype.Service;
@@ -26,11 +27,17 @@ public class TextServiceImpl implements TextService {
         //TEMPORARY SOLUTION
         if (command.equals("/start")) {
             return new TextDTO("""
-                    Assalomu alaykum, hurmatli *{username}*\\! \
-                    
-                    *Masjid Sari* botimizga xush kelibsiz\\!\
-                    
-                    Eng yaqin Masjid Sari borish uchun joylashuvni yuboring""", true);
+                    *Assalomu alaykum\\!* \
+                   
+                    🌙 *Masjid Sari  🕌 🚶🏽‍♂️ botimizga xush kelibsiz\\!*\
+                   ️
+                    *Botimizdan foydalanish uchun o'zingizga kerakli tugmani bosing:*⏬""", true);
+        }
+
+        if (command.equals(Command.CLOSEST_MASJID.getText())) {
+            return new TextDTO("""
+                    *Eng yaqin Masjidlarni 🕌 va Namoat Namozlarni 🕐 ko'rish uchun joylashuvni yuboring* 📿 
+                    """, true);
         }
 
         return null;

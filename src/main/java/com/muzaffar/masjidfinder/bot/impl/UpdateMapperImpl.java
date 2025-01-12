@@ -40,6 +40,29 @@ public class UpdateMapperImpl implements UpdateMapper {
                     returnList.add(sendMessage);
                     return returnList;
                 }
+                //"Yaqin Masjidlar"
+                //"Namoz Vaqtlari"
+                //“Iqoma Vaqtlari”
+                //“Mening Masjidlarim”
+                //"Bot haqida"
+
+                if (Objects.equals(command, Command.CLOSEST_MASJID.getText())) {
+                    sendMessage = updateHandler.closestMasjid(update, command);
+                    returnList.add(sendMessage);
+                    return returnList;
+                }
+
+                if (Objects.equals(command, Command.PRAYER_TIMES.getText())) {
+                    //TODO
+                }
+
+                if (Objects.equals(command, Command.COMMUNITY_PRAYER_TIMES.getText())) {
+                    //TODO
+                }
+
+                if (Objects.equals(command, Command.ABOUT.getText())) {
+                    //TODO
+                }
 
                 if (hasLocation(update)) {
                     var result = updateHandler.getMasajid(update);

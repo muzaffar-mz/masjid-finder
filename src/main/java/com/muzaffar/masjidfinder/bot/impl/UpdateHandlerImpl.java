@@ -34,37 +34,41 @@ public class UpdateHandlerImpl implements UpdateHandler {
 
     @Override
     public SendMessage start(Update update, String command) {
-        var user = userService.getOrSaveByTgUserDTO(user(update));
+        userService.getOrSaveByTgUserDTO(user(update));
 
         var textDTO = textService.getText(command);
 
-        //text supposed to have a placeholder for the username, like so --> Welcome {username}
-        var text = textDTO.text().replace("{username}", user.firstname());
+        return sendMessage(getChatId(update), textDTO, KeyboardUtil.defaultKeyboard());
+    }
 
-        //TODO the getting sendMessage i DON'T LIKE IT, NEEDS TO BE REFACTORED
-        var message = UpdateUtil.sendMessage(getChatId(update), text, KeyboardUtil.getLocationKB());
-
-        if (textDTO.isFormatted()) {
-            message.enableMarkdownV2(true);
-        }
-        return message;
+    @Override
+    public SendMessage closestMasjid(Update update, String command) {
+        var textDTO = textService.getText(command);
+        return sendMessage(getChatId(update), textDTO, KeyboardUtil.getLocationKB());
     }
 
     @Override
     public List<SendMessage> getMasajid(Update update) {
         List<SendMessage> result = new ArrayList<>();
         final var chatId = getChatId(update);
-        final String mainText = "Iltimos qulay masjidni tanlang:";
-        result.add(UpdateUtil.message(chatId, mainText));
+        final String mainText = "*Iltimos qulay masjidni tanlang:*";
+        SendMessage m = message(chatId, mainText);
+        m.enableMarkdownV2(true);
+        result.add(m);
 
         final var location = update.getMessage().getLocation();
         var masajid = masjidService.getMasajidClosestToLocation(new LocationDTO(location.getLatitude(), location.getLongitude()));
         for (MasjidDTO masjid : masajid) {
             final String text = masjid.getNameAndPrayerTimesForBot();
-            var message = UpdateUtil.inLineKeyboard(chatId, text, KeyboardUtil.getMasjidKeyboard(masjid));
+            var message = UpdateUtil.sendMessage(chatId, text, KeyboardUtil.getMasjidKeyboard(masjid));
             message.enableMarkdownV2(true);
             result.add(message);
         }
+
+//        //back button
+        var backButton = UpdateUtil.sendMessage(chatId, "⏮️ *Asosiy bo'limga qaytish:* ", KeyboardUtil.getInlineMainMenuButton());
+        backButton.enableMarkdownV2(true);
+        result.add(backButton);
         return result;
     }
 

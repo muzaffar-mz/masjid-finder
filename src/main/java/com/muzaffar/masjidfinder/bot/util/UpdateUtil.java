@@ -1,5 +1,6 @@
 package com.muzaffar.masjidfinder.bot.util;
 
+import com.muzaffar.masjidfinder.service.text.model.TextDTO;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -7,19 +8,19 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 
 public class UpdateUtil {
 
-    public static SendMessage sendMessage(String chatId, String text, ReplyKeyboardMarkup keyboard) {
-        var senMessage = message(chatId, text);
+    public static SendMessage sendMessage(String chatId, TextDTO text, ReplyKeyboardMarkup keyboard) {
+        var senMessage = message(chatId, text.text());
         senMessage.setReplyMarkup(keyboard);
+        senMessage.enableMarkdownV2(text.isFormatted());
         return senMessage;
     }
 
-    public static SendMessage inLineKeyboard(String chatId, String text, InlineKeyboardMarkup keyboard) {
-        var sm = SendMessage.builder()
+    public static SendMessage sendMessage(String chatId, String text, InlineKeyboardMarkup keyboard) {
+        return SendMessage.builder()
                 .chatId(chatId)
                 .text(text)
                 .replyMarkup(keyboard)
                 .build();
-        return sm;
     }
 
     public static SendMessage message(String chatId, String text) {

@@ -11,4 +11,6 @@ public interface UpdateHandler {
     SendMessage start(Update update, String command);
     List<SendMessage> getMasajid(Update update);
     List<PartialBotApiMethod<?>> sendMasjidLocation(Update update);
+
+    SendMessage closestMasjid(Update update, String command);
 }
