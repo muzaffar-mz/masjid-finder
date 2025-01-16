@@ -1,6 +1,7 @@
 package com.muzaffar.masjidfinder.bot.impl;
 
 import com.muzaffar.masjidfinder.bot.UpdateHandler;
+import com.muzaffar.masjidfinder.bot.enums.Command;
 import com.muzaffar.masjidfinder.bot.model.TgUserDTO;
 import com.muzaffar.masjidfinder.bot.util.KeyboardUtil;
 import com.muzaffar.masjidfinder.bot.util.UpdateUtil;
@@ -8,6 +9,7 @@ import com.muzaffar.masjidfinder.model.LocationDTO;
 import com.muzaffar.masjidfinder.service.masjid.MasjidService;
 import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
 import com.muzaffar.masjidfinder.service.text.TextService;
+import com.muzaffar.masjidfinder.service.text.model.TextDTO;
 import com.muzaffar.masjidfinder.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,27 +50,24 @@ public class UpdateHandlerImpl implements UpdateHandler {
     }
 
     @Override
-    public List<SendMessage> getMasajid(Update update) {
+    public List<SendMessage> getMasajid(Update update, String command) {
         List<SendMessage> result = new ArrayList<>();
         final var chatId = getChatId(update);
-        final String mainText = "*Iltimos qulay masjidni tanlang:*";
-        SendMessage m = message(chatId, mainText);
-        m.enableMarkdownV2(true);
+
+        //TODO
+        var mainText = textService.getText("location");
+        SendMessage m = sendMessage(chatId, mainText, KeyboardUtil.backKeyboard());
         result.add(m);
 
         final var location = update.getMessage().getLocation();
         var masajid = masjidService.getMasajidClosestToLocation(new LocationDTO(location.getLatitude(), location.getLongitude()));
         for (MasjidDTO masjid : masajid) {
             final String text = masjid.getNameAndPrayerTimesForBot();
-            var message = UpdateUtil.sendMessage(chatId, text, KeyboardUtil.getMasjidKeyboard(masjid));
+            var message = UpdateUtil.sendMessage(chatId, text, KeyboardUtil.getMasjidKeyboardV2(masjid));
             message.enableMarkdownV2(true);
             result.add(message);
         }
 
-//        //back button
-        var backButton = UpdateUtil.sendMessage(chatId, "⏮️ *Asosiy bo'limga qaytish:* ", KeyboardUtil.getInlineMainMenuButton());
-        backButton.enableMarkdownV2(true);
-        result.add(backButton);
         return result;
     }
 
@@ -94,6 +93,60 @@ public class UpdateHandlerImpl implements UpdateHandler {
         result.add(sendLocation);
 
         return result;
+    }
+
+    @Override
+    public SendMessage mainMenu(Update update, String command) {
+        var textDTO = textService.getText(command);
+        return sendMessage(getChatId(update), textDTO, KeyboardUtil.defaultKeyboard());
+    }
+
+    @Override
+    public SendMessage about(Update update, String command) {
+        var textDTO = textService.getText(command);
+        return sendMessage(getChatId(update), textDTO, KeyboardUtil.defaultKeyboard());
+    }
+
+    @Override
+    public List<SendMessage> favorites(Update update, String command) {
+        List<SendMessage> result = new ArrayList<>();
+        final var chatId = getChatId(update);
+
+        var mainText = textService.getText(command);
+        var user = userService.getUser(user(update));
+
+        if (user.masajid().isEmpty()) {
+            mainText = new TextDTO(
+                    mainText.text() + "\n *Sizda hali masjidlar bu ro'yxatga qo'shilmagan*",
+                    mainText.isFormatted()
+            );
+        }
+
+        SendMessage main = sendMessage(chatId, mainText, KeyboardUtil.backKeyboard());
+        result.add(main);
+
+        for (MasjidDTO dto : user.masajid()) {
+            final String text = dto.getNameAndPrayerTimesForBot();
+            var message = UpdateUtil.sendMessage(chatId, text, KeyboardUtil.getMasjidKeyboardV3(dto));
+            message.enableMarkdownV2(true);
+            result.add(message);
+        }
+
+        return result;
+    }
+
+    @Override
+    public SendMessage temporaryUnavailable(Update update) {
+
+        var textDTO = textService.temporaryUnavailable();
+
+        return sendMessage(getChatId(update), textDTO, KeyboardUtil.defaultKeyboard());
+    }
+
+    @Override
+    public SendMessage notRecognised(Update update) {
+        var textDTO = textService.unrecognised();
+        return sendMessage(getChatId(update), textDTO, KeyboardUtil.defaultKeyboard());
     }
 
     public static TgUserDTO user(Update update) {

@@ -1,7 +1,9 @@
 package com.muzaffar.masjidfinder.service.masjid.impl;
 
 import com.muzaffar.masjidfinder.domain.entity.Masjid;
+import com.muzaffar.masjidfinder.domain.entity.UserMasjid;
 import com.muzaffar.masjidfinder.domain.repository.MasjidRepo;
+import com.muzaffar.masjidfinder.domain.repository.UserMasjidRepo;
 import com.muzaffar.masjidfinder.model.LocationDTO;
 import com.muzaffar.masjidfinder.service.masjid.MasjidService;
 import com.muzaffar.masjidfinder.service.masjid.mapper.MasjidMapper;
@@ -22,6 +24,9 @@ import java.util.List;
 public class MasjidServiceImpl implements MasjidService {
 
     private final MasjidRepo masjidRepo;
+    private final UserMasjidRepo userMasjidRepo;
+
+
     private static final double EARTH_RADIUS = 6_371.00;
 
     @Override
@@ -42,6 +47,43 @@ public class MasjidServiceImpl implements MasjidService {
                 }
         );
         return new MasjidDTO(masjid);
+    }
+
+    @Override
+    public List<MasjidDTO> getFavsByUserId(Long userId) {
+
+        var favs = userMasjidRepo.findAllByUserId(userId);
+
+        if (favs.isEmpty()) {
+            return List.of();
+        }
+
+        var masajidIds = favs.stream()
+                .map(UserMasjid::getMasjidId)
+                .toList();
+
+        var masajid = masjidRepo.findAllByIdIn(masajidIds);
+
+        if (favs.isEmpty()) {
+            return List.of();
+        }
+
+        return masajid.stream()
+                .map(MasjidDTO::new)
+                .toList();
+    }
+
+    @Override
+    public MasjidDTO getDefaultMasjidByUserId(Long userId) {
+        var def = userMasjidRepo.findByUserIdAndIsDefaultTrue(userId);
+
+        if (def.isEmpty()) {
+            return null;
+        }
+
+        var masjid = masjidRepo.findById(def.get().getMasjidId());
+
+        return masjid.map(MasjidDTO::new).orElse(null);
     }
 
     private List<MasjidDTO> orderMasjidsByDistanceAscending(List<Masjid> masjids, LocationDTO dto) {

@@ -17,7 +17,7 @@ public class CacheServiceImpl implements CacheService {
 
     @Override
     public void saveSentMessagesId(String chatId, List<Integer> messages) {
-        deleteMessages.computeIfAbsent(chatId, _ -> new ArrayList<>()).addAll(messages);
+        deleteMessages.computeIfAbsent(chatId, k -> new ArrayList<>()).addAll(messages);
     }
 
     @Override

@@ -12,13 +12,8 @@ public enum Command {
     SHARE_LOCATION("Eng yaqin masjidlarni ko'rish"),
     ABOUT("ℹ️ Bot Haqida"),
     FAVORITES("💚 Mening Masjidlarim"),
-//    SETTINGS("Settings"),
-//    CHANGE_LANGUAGE("Change bot language"),
-//    SET_MASJID("Set/change preferred/default masjid"),
-//    SET_CONTACT("Save your contact"),
-//    NOTIFICATION("Turn on/off community prayer update notification"),
-//    SHARE_CONTACT("Share my contact"),
-    BACK("⬅️ Ortga qaytish"),
+    GET_THE_CLOSEST_MASAJID("📍 Eng yaqin masjidlarni ko'rish"),
+    BACK("⏮️ Asosiy bo'limga qaytish"),
     OTHER("DIFF"),
     ;
 

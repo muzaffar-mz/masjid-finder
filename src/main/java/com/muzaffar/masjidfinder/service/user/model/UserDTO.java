@@ -1,6 +1,9 @@
 package com.muzaffar.masjidfinder.service.user.model;
 
 import com.muzaffar.masjidfinder.domain.entity.User;
+import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
+
+import java.util.List;
 
 public record UserDTO(
         Long id,
@@ -11,7 +14,8 @@ public record UserDTO(
         String lastname,
         Long telegramId,
         String password,
-        Long defaultMasjidId
+        MasjidDTO defaultMasjidId,
+        List<MasjidDTO> masajid
 ) {
 
     public UserDTO(User user) {
@@ -23,7 +27,26 @@ public record UserDTO(
                 user.getLastname(),
                 user.getTelegramId(),
                 user.getPassword(),
-                user.getDefaultMasjid() != null ? user.getDefaultMasjid().getId() : null
+                null,
+                null
         );
+    }
+
+    public UserDTO(User user, MasjidDTO defaultOne, List<MasjidDTO> masajid) {
+        this(user.getId(),
+                user.getPhone(),
+                user.getEmail(),
+                user.getUsername(),
+                user.getFirstname(),
+                user.getLastname(),
+                user.getTelegramId(),
+                user.getPassword(),
+                defaultOne,
+                masajid
+        );
+    }
+
+    public UserDTO(User user, List<MasjidDTO> masajid) {
+        this(user, null, masajid);
     }
 }

@@ -1,6 +1,5 @@
 package com.muzaffar.masjidfinder.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.muzaffar.masjidfinder.domain.entity.enums.MasjidNamesGroup;
 import com.muzaffar.masjidfinder.domain.entity.enums.MasjidStatus;
 import jakarta.persistence.*;
@@ -9,9 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import java.time.LocalTime;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -54,11 +51,6 @@ public class Masjid extends BaseEntity {
 
     @Column(name = "isha")
     private LocalTime isha;
-
-
-    @OneToMany(mappedBy = "defaultMasjid", fetch = FetchType.LAZY)
-    @JsonManagedReference
-    List<User> users;
 
     @Column(name = "notes")
     private String notes;

@@ -20,6 +20,23 @@ public class TextServiceImpl implements TextService {
     // 6. another public method that reloads all texts from the repo and puts into hashmap
 
 
+    @Override
+    public TextDTO temporaryUnavailable() {
+        return new TextDTO("""
+                    *Hurmatli foydalanuvchi\\!*\
+                    \n*Bu tugma voqtinchalik faol emas\\.*\
+                    \n*Noqulayliklar uchun uzr so'raymiz\\!*\
+                """, true);
+    }
+
+    @Override
+    public TextDTO unrecognised() {
+        return new TextDTO("""
+                    *Hurmatli foydalanuvchi\\!*\
+                    \n*Siz yuborgan so'rov topilmadi\\.*\
+                    \n*Noqulayliklar uchun uzr so'raymiz\\!*\
+                """, true);
+    }
 
     @Override
     public TextDTO getText(String command) {
@@ -34,12 +51,41 @@ public class TextServiceImpl implements TextService {
                     *Botimizdan foydalanish uchun o'zingizga kerakli tugmani bosing:*⏬""", true);
         }
 
+        if (command.equals("location")) {
+            // TODO
+            return new TextDTO("""
+                    *Iltimos qulay masjidni tanlang:*
+                    """, true);
+        }
+
         if (command.equals(Command.CLOSEST_MASJID.getText())) {
             return new TextDTO("""
                     *Eng yaqin Masjidlarni 🕌 va Namoat Namozlarni 🕐 ko'rish uchun joylashuvni yuboring* 📿 
                     """, true);
         }
 
-        return null;
+        if (command.equals(Command.BACK.getText())) {
+            return new TextDTO("""
+                    🌙 *Masjid Sari*  🕌 🚶🏽‍
+                    *O'zingizga kerakli tugmani bosing:*⏬
+                    """, true);
+        }
+
+        if (command.equals(Command.FAVORITES.getText())) {
+            return new TextDTO("""
+                    💚🕌 *«Mening Masjidlarim» ro’yxati:*
+                    """, true);
+        }
+
+        if (command.equals(Command.ABOUT.getText())) {
+            return new TextDTO("""
+                    *Botning maqsadi \\- foydalanuvchiga yaqin masjidlarni, ularga olib boruvchi yo’llarni, ulardagi namoz vaqtlarini topishda ko’mak berish\\!*\
+                     
+                     \n*Ishlab chiquvchisi \\- “Toshkent Inc”
+                      \nBog’lanish uchun \\- 998 \\(90\\) 123\\-45\\-67 \\/ feedback@toshkentinc\\.com*
+                    """, true);
+        }
+
+        return temporaryUnavailable();
     }
 }

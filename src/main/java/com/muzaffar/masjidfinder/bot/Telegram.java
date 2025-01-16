@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.muzaffar.masjidfinder.bot.util.UpdateUtil.isCallbackQuery;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -60,9 +62,23 @@ public class Telegram implements SpringLongPollingBot, LongPollingSingleThreadUp
         //2. deletes all previous messages
         var chatId = ((SendMessage) sendMessages.getFirst()).getChatId();
         deleteMessages(chatId);
+        deleteSentUpdate(chatId, update);
 
         //3. sends all new messages
         executeMessages(sendMessages, chatId);
+    }
+
+    private void deleteSentUpdate(String chatId, Update update) {
+        if (isCallbackQuery(update) || update.getMessage().getText().equals("/start")) {
+            return;
+        }
+
+        try {
+            telegramClient.execute(new DeleteMessage(chatId, update.getMessage().getMessageId()));
+        } catch (TelegramApiException e) {
+            log.error("Error while deleting sent update. Chat ID: {}, message: {}, exception: {}",
+                    chatId, update.getMessage().getMessageId(), e.toString());
+        }
     }
 
     private void executeMessages(List<PartialBotApiMethod<?>> sendMessages, String chatId) {
@@ -87,7 +103,7 @@ public class Telegram implements SpringLongPollingBot, LongPollingSingleThreadUp
         cacheService.saveSentMessagesId(chatId, sentMessagesId);
     }
 
-    private void deleteMessages(String chatId) throws TelegramApiException {
+    private void deleteMessages(String chatId) {
         var messages = cacheService.getMessagesIdByChatId(chatId);
 
         if (Objects.isNull(messages)) {

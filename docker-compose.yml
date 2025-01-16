@@ -1,0 +1,9 @@
+services:
+  masjid-finder:
+    container_name: masjid-finder
+    image: mmuratov/masjid-finder
+    ports:
+      - "8088:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/masjid_bot
+    restart: unless-stopped

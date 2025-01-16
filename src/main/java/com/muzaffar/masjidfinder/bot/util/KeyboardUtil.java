@@ -1,6 +1,7 @@
 package com.muzaffar.masjidfinder.bot.util;
 
 import com.muzaffar.masjidfinder.bot.enums.CallbackCommand;
+import com.muzaffar.masjidfinder.bot.enums.Command;
 import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
 import org.jetbrains.annotations.NotNull;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -64,62 +65,75 @@ public class KeyboardUtil {
         return rows;
     }
 
-    public static KeyboardRow backButtonInRow() {
+    private static KeyboardRow backButtonInRow() {
         return new KeyboardRow(backButton());
     }
 
-    public static KeyboardButton favoriteMasajid() {
+    private static KeyboardButton favoriteMasajid() {
         return KeyboardButton
                 .builder()
-                .text("💚 Mening Masjidlarim")
+                .text(Command.FAVORITES.getText())
                 .build();
     }
 
-    public static KeyboardButton communityPrayerTimesButton() {
+    private static KeyboardButton communityPrayerTimesButton() {
         return KeyboardButton
                 .builder()
-                .text("⏰ Jamoat Vaqtlari")
+                .text(Command.COMMUNITY_PRAYER_TIMES.getText())
                 .build();
     }
 
-    public static KeyboardButton prayerTimesButton() {
+    private static KeyboardButton prayerTimesButton() {
         return KeyboardButton
                 .builder()
-                .text("🕐 Namoz Vaqtlari")
+                .text(Command.PRAYER_TIMES.getText())
                 .build();
     }
 
-    public static KeyboardButton closeMasajidButton() {
+    private static KeyboardButton closeMasajidButton() {
         return KeyboardButton
                 .builder()
-                .text("🕌 Yaqin Masjidlar")
+                .text(Command.CLOSEST_MASJID.getText())
                 .build();
     }
 
-    public static KeyboardButton aboutBotButton() {
+    private static KeyboardButton aboutBotButton() {
         return KeyboardButton
                 .builder()
-                .text("ℹ️ Bot Haqida")
+                .text(Command.ABOUT.getText())
                 .build();
     }
 
-    public static KeyboardButton backButton() {
+    private static KeyboardButton backButton() {
         return KeyboardButton
                 .builder()
-                .text("⬅️ Ortga qaytish")
+                .text(Command.BACK.getText())
                 .build();
     }
 
-    public static KeyboardButton sendLocationButton() {
+    private static KeyboardButton sendLocationButton() {
         return KeyboardButton
                 .builder()
-                .text("📍 Eng yaqin masjidlarni ko'rish")
+                .text(Command.GET_THE_CLOSEST_MASAJID.getText())
                 .requestLocation(true)
                 .build();
     }
 
     //TODO below here is everything chang
 
+    public static InlineKeyboardMarkup getMasjidKeyboardV2(MasjidDTO masjid) {
+        return InlineKeyboardMarkup
+                .builder()
+                .keyboard(getInlineKeyboardRowsForMasjid(masjid))
+                .build();
+    }
+
+    public static InlineKeyboardMarkup getMasjidKeyboardV3(MasjidDTO masjid) {
+        return InlineKeyboardMarkup
+                .builder()
+                .keyboard(getInlineKeyboardRowsForMasjidV2(masjid))
+                .build();
+    }
 
     public static InlineKeyboardMarkup getMasjidKeyboard(MasjidDTO masjid) {
         return InlineKeyboardMarkup
@@ -142,6 +156,70 @@ public class KeyboardUtil {
         );
     }
 
+    private static List<InlineKeyboardRow> getInlineKeyboardRowsForMasjid(MasjidDTO dto) {
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+        rows.add(
+                new InlineKeyboardRow(
+                        InlineKeyboardButton
+                                .builder()
+                                .text(
+                                        CallbackCommand.SELECTED_MJ_LOCATION.getFullText()
+                                                .replace("{m_name}", dto.name())
+                                                .replace("{km}", dto.distance().toString())
+                                )
+                                .callbackData(CallbackCommand.SELECTED_MJ_LOCATION.getText() + "_" + dto.id())
+                                .build()
+                )
+        );
+
+        rows.add(
+                new InlineKeyboardRow(
+                        InlineKeyboardButton
+                                .builder()
+                                .text(
+                                        CallbackCommand.SET_MJ_AS_FAV.getFullText()
+                                )
+                                .callbackData(CallbackCommand.SET_MJ_AS_FAV.getText() + "_" + dto.id())
+                                .build()
+                )
+        );
+
+        return rows;
+    }
+
+    private static List<InlineKeyboardRow> getInlineKeyboardRowsForMasjidV2(MasjidDTO dto) {
+
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+        rows.add(
+                new InlineKeyboardRow(
+                        InlineKeyboardButton
+                                .builder()
+                                .text(
+                                        CallbackCommand.SELECTED_MJ_LOCATION.getFullText()
+                                                .replace("{m_name}", dto.name())
+                                                .replace("{km}", "nomalum")
+                                )
+                                .callbackData(CallbackCommand.SELECTED_MJ_LOCATION.getText() + "_" + dto.id())
+                                .build()
+                )
+        );
+
+        rows.add(
+                new InlineKeyboardRow(
+                        InlineKeyboardButton
+                                .builder()
+                                .text(
+                                        CallbackCommand.REMOVE_FROM_MJ_AS_FAV.getFullText()
+                                )
+                                .callbackData(CallbackCommand.REMOVE_FROM_MJ_AS_FAV.getText() + "_" + dto.id())
+                                .build()
+                )
+        );
+
+        return rows;
+    }
+
+
     public static InlineKeyboardMarkup getInlineMainMenuButton() {
         return InlineKeyboardMarkup
                 .builder()
@@ -157,5 +235,17 @@ public class KeyboardUtil {
                         .callbackData(CallbackCommand.BACK_TO_MAIN_MENU.getText())
                         .build()
         );
+    }
+
+    public static ReplyKeyboardMarkup backKeyboard() {
+
+        List<KeyboardRow> listOfKeyboardRows = new ArrayList<>();
+        listOfKeyboardRows.add(backButtonInRow());
+
+        return ReplyKeyboardMarkup.builder()
+                .keyboard(listOfKeyboardRows)
+                .oneTimeKeyboard(true)
+                .resizeKeyboard(true)
+                .build();
     }
 }

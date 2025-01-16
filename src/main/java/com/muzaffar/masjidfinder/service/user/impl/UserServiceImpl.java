@@ -5,6 +5,7 @@ import com.muzaffar.masjidfinder.bot.model.TgUserDTO;
 import com.muzaffar.masjidfinder.domain.entity.User;
 import com.muzaffar.masjidfinder.domain.entity.enums.UserStatus;
 import com.muzaffar.masjidfinder.domain.repository.UserRepo;
+import com.muzaffar.masjidfinder.service.masjid.MasjidService;
 import com.muzaffar.masjidfinder.service.user.UserService;
 import com.muzaffar.masjidfinder.service.user.mapper.UserMapper;
 import com.muzaffar.masjidfinder.service.user.model.UserDTO;
@@ -21,21 +22,35 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo;
     private final UserMapper userMapper;
+    private final MasjidService masjidService;
 
     @Override
     public UserDTO getOrSaveByTgUserDTO(TgUserDTO dto) {
 
-        var user = getUserByTgId(dto.telegramId());
+        var user = getOrSaveUser(dto);
 
-        if (Objects.nonNull(user)){
-            if (user.getStatus() != UserStatus.ACTIVE) {
-                throw new AccessDeniedException("Access for the user with Telegram id: [%s] is denied".formatted(dto.telegramId()));
-            }
-
-            return userMapper.toUserDTO(user);
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new AccessDeniedException("Access for the user with Telegram id: [%s] is denied".formatted(dto.telegramId()));
         }
 
-        return userMapper.toUserDTO(save(dto));
+        return userMapper.toUserDTO(user);
+    }
+
+    @Override
+    public UserDTO getUser(TgUserDTO userDTO) {
+        var user = getOrSaveUser(userDTO);
+        var favs = masjidService.getFavsByUserId(user.getId());
+        var defaultOne = masjidService.getDefaultMasjidByUserId(user.getId());
+        return new UserDTO(user, defaultOne, favs);
+    }
+
+    private User getOrSaveUser(TgUserDTO dto) {
+        var user = getUserByTgId(dto.telegramId());
+
+        if (Objects.isNull(user)){
+            user = save(dto);
+        }
+        return user;
     }
 
     private User getUserByTgId(Long telegramId) {

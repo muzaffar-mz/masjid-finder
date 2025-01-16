@@ -40,11 +40,6 @@ public class UpdateMapperImpl implements UpdateMapper {
                     returnList.add(sendMessage);
                     return returnList;
                 }
-                //"Yaqin Masjidlar"
-                //"Namoz Vaqtlari"
-                //“Iqoma Vaqtlari”
-                //“Mening Masjidlarim”
-                //"Bot haqida"
 
                 if (Objects.equals(command, Command.CLOSEST_MASJID.getText())) {
                     sendMessage = updateHandler.closestMasjid(update, command);
@@ -53,19 +48,39 @@ public class UpdateMapperImpl implements UpdateMapper {
                 }
 
                 if (Objects.equals(command, Command.PRAYER_TIMES.getText())) {
-                    //TODO
+                    //TODO either send location or do search
+                    sendMessage = updateHandler.temporaryUnavailable(update);
+                    returnList.add(sendMessage);
+                    return returnList;
                 }
 
                 if (Objects.equals(command, Command.COMMUNITY_PRAYER_TIMES.getText())) {
-                    //TODO
+                    //TODO either send location or do search
+                    sendMessage = updateHandler.temporaryUnavailable(update);
+                    returnList.add(sendMessage);
+                    return returnList;
                 }
 
                 if (Objects.equals(command, Command.ABOUT.getText())) {
-                    //TODO
+                    sendMessage = updateHandler.about(update, command);
+                    returnList.add(sendMessage);
+                    return returnList;
+                }
+
+                if (Objects.equals(command, Command.FAVORITES.getText())) {
+                    var result = updateHandler.favorites(update, command);
+                    returnList.addAll(result);
+                    return returnList;
+                }
+
+                if (Objects.equals(command, Command.BACK.getText())) {
+                    sendMessage = updateHandler.mainMenu(update, command);
+                    returnList.add(sendMessage);
+                    return returnList;
                 }
 
                 if (hasLocation(update)) {
-                    var result = updateHandler.getMasajid(update);
+                    var result = updateHandler.getMasajid(update, command);
                     returnList.addAll(result);
                     return returnList;
                 }
@@ -79,14 +94,33 @@ public class UpdateMapperImpl implements UpdateMapper {
                     returnList.addAll(sendLocation);
                     return returnList;
                 }
-            }
 
+                if (Objects.equals(newCommand, CallbackCommand.SET_MJ_AS_DEFAULT)) {
+                    //TODO
+                }
+
+                if (Objects.equals(newCommand, CallbackCommand.SET_MJ_AS_FAV)) {
+                    //TODO
+                }
+
+                if (Objects.equals(newCommand, CallbackCommand.REMOVE_FROM_MJ_AS_FAV)) {
+                    //TODO
+                }
+
+                if (Objects.equals(newCommand, CallbackCommand.SET_MJ_AS_DEFAULT)) {
+                    //TODO
+                }
+
+            }
 
         } catch (Exception ignore) {
 
         }
 
-        return null;
+        //if not recognized
+        sendMessage = updateHandler.notRecognised(update);
+        returnList.add(sendMessage);
+        return returnList;
     }
 
     public static boolean isMessage(Update update) {

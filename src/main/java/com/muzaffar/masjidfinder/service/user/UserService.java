@@ -5,4 +5,6 @@ import com.muzaffar.masjidfinder.service.user.model.UserDTO;
 
 public interface UserService {
     UserDTO getOrSaveByTgUserDTO(TgUserDTO dto);
+
+    UserDTO getUser(TgUserDTO user);
 }

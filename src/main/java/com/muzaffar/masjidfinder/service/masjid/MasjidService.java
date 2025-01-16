@@ -9,4 +9,8 @@ public interface MasjidService {
     List<MasjidDTO> getMasajidClosestToLocation(LocationDTO dto);
 
     MasjidDTO getMasjid(Long id);
+
+    List<MasjidDTO> getFavsByUserId(Long userId);
+
+    MasjidDTO getDefaultMasjidByUserId(Long userId);
 }

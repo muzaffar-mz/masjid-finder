@@ -17,7 +17,7 @@
 	<name>masjid-finder</name>
 	<description>Masjid Locations and Community prayer times Project</description>
 	<properties>
-		<java.version>23</java.version>
+		<java.version>21</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -141,10 +141,10 @@
 			<plugin>
 				<groupId>com.google.cloud.tools</groupId>
 				<artifactId>jib-maven-plugin</artifactId>
-				<version>3.4.3</version>
+				<version>3.4.4</version>
 				<configuration>
 					<from>
-						<image>eclipse-temurin:23</image>
+						<image>eclipse-temurin:21</image>
 						<platforms>
 							<platform>
 								<architecture>arm64</architecture>

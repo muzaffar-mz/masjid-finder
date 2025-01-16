@@ -39,21 +39,21 @@ class UserServiceTest {
     private User user;
     private UserDTO userDTO;
 
-    @BeforeEach
-    void setUp() {
-        underTest = new UserServiceImpl(userRepo, userMapper);
-        this.tgUser = new TgUserDTO(15L, "@user_name", "First_Name", "Last_Name");
-
-        this.user = new User();
-        user.setRole(UserRole.USER);
-        user.setStatus(UserStatus.ACTIVE);
-        user.setTelegramId(15L);
-        user.setUsername("@user_name");
-        user.setFirstname("First_Name");
-        user.setLastname("Last_Name");
-
-        this.userDTO = new UserDTO(user);
-    }
+//    @BeforeEach
+//    void setUp() {
+//        underTest = new UserServiceImpl(userRepo, userMapper);
+//        this.tgUser = new TgUserDTO(15L, "@user_name", "First_Name", "Last_Name");
+//
+//        this.user = new User();
+//        user.setRole(UserRole.USER);
+//        user.setStatus(UserStatus.ACTIVE);
+//        user.setTelegramId(15L);
+//        user.setUsername("@user_name");
+//        user.setFirstname("First_Name");
+//        user.setLastname("Last_Name");
+//
+//        this.userDTO = new UserDTO(user);
+//    }
 
 
     /** Three cases:

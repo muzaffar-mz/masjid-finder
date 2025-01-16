@@ -13,7 +13,6 @@ public interface UserMapper {
     @Mapping(target = "role", constant = "USER")
     User toUser(String phone);
 
-    @Mapping(target = "defaultMasjidId", source = "user.defaultMasjid.id")
     UserDTO toUserDTO(User user);
 
 
