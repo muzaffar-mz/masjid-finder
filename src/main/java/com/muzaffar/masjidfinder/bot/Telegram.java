@@ -69,7 +69,8 @@ public class Telegram implements SpringLongPollingBot, LongPollingSingleThreadUp
     }
 
     private void deleteSentUpdate(String chatId, Update update) {
-        if (isCallbackQuery(update) || update.getMessage().getText().equals("/start")) {
+        if (isCallbackQuery(update) ||
+                (Objects.nonNull(update.getMessage().getText()) && update.getMessage().getText().equals("/start"))) {
             return;
         }
 
