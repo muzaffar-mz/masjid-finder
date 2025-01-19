@@ -10,6 +10,7 @@ public class MasjidFinderApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MasjidFinderApplication.class, args);
+
 	}
 
 }
