@@ -1,5 +1,6 @@
 package com.muzaffar.masjidfinder.service.text.impl;
 
+import com.muzaffar.masjidfinder.bot.enums.CallbackCommand;
 import com.muzaffar.masjidfinder.bot.enums.Command;
 import com.muzaffar.masjidfinder.domain.repository.TextRepo;
 import com.muzaffar.masjidfinder.service.text.TextService;
@@ -122,6 +123,12 @@ public class TextServiceImpl implements TextService {
                      
                      \n*Ishlab chiquvchisi \\- “Toshkent Inc”
                       \nBog’lanish uchun \\- 998 \\(90\\) 123\\-45\\-67 \\/ feedback@toshkentinc\\.com*
+                    """, true);
+        }
+
+        if (command.equals(CallbackCommand.SET_MJ_AS_FAV.getText())) {
+            return new TextDTO("""
+                    *«{masjid}» «Mening Masjidlarim» ro’yxatiga qo'shildi\\!*\
                     """, true);
         }
 

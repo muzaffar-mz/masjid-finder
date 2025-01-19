@@ -95,21 +95,22 @@ public class UpdateMapperImpl implements UpdateMapper {
                     return returnList;
                 }
 
-                if (Objects.equals(newCommand, CallbackCommand.SET_MJ_AS_DEFAULT)) {
+                if (Objects.equals(newCommand, CallbackCommand.SET_MJ_AS_DEFAULT.getText())) {
                     //TODO
                 }
 
-                if (Objects.equals(newCommand, CallbackCommand.SET_MJ_AS_FAV)) {
-                    //TODO
+                if (Objects.equals(newCommand, CallbackCommand.SET_MJ_AS_FAV.getText())) {
+                    sendMessage = updateHandler.setMasjidAsFav(update, newCommand);
+                    returnList.add(sendMessage);
+                    return returnList;
                 }
 
-                if (Objects.equals(newCommand, CallbackCommand.REMOVE_FROM_MJ_AS_FAV)) {
-                    //TODO
+                if (Objects.equals(newCommand, CallbackCommand.REMOVE_FROM_MJ_AS_FAV.getText())) {
+                    sendMessage = updateHandler.removeMasjidFromFav(update);
+                    returnList.add(sendMessage);
+                    return returnList;
                 }
 
-                if (Objects.equals(newCommand, CallbackCommand.SET_MJ_AS_DEFAULT)) {
-                    //TODO
-                }
 
             }
 

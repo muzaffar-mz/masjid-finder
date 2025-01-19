@@ -1,7 +1,6 @@
 package com.muzaffar.masjidfinder.bot.impl;
 
 import com.muzaffar.masjidfinder.bot.UpdateHandler;
-import com.muzaffar.masjidfinder.bot.enums.Command;
 import com.muzaffar.masjidfinder.bot.model.TgUserDTO;
 import com.muzaffar.masjidfinder.bot.util.KeyboardUtil;
 import com.muzaffar.masjidfinder.bot.util.UpdateUtil;
@@ -79,7 +78,7 @@ public class UpdateHandlerImpl implements UpdateHandler {
         var chatId = getChatId(update);
         var sendMessage = SendMessage.builder()
                 .chatId(chatId)
-                .text(masjid.name())
+                .text(masjid.name() + "ga yo'nalish:")
                 .build();
         result.add(sendMessage);
 
@@ -147,6 +146,22 @@ public class UpdateHandlerImpl implements UpdateHandler {
     public SendMessage notRecognised(Update update) {
         var textDTO = textService.unrecognised();
         return sendMessage(getChatId(update), textDTO, KeyboardUtil.defaultKeyboard());
+    }
+
+    @Override
+    public SendMessage setMasjidAsFav(Update update, String command) {
+        var user = userService.getUser(user(update));
+        var masjid = masjidService.setMasjidAsFav(user.id(), getMasjidId(update));
+
+        //TODO not final
+        var tempText = textService.getText(command);
+        var text = new TextDTO(tempText.text().replace("{masjid}", masjid.name()), tempText.isFormatted());
+        return sendMessage(getChatId(update), text, KeyboardUtil.defaultKeyboard());
+    }
+
+    @Override
+    public SendMessage removeMasjidFromFav(Update update) {
+        return null;
     }
 
     public static TgUserDTO user(Update update) {

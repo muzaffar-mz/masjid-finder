@@ -163,9 +163,10 @@ public class KeyboardUtil {
                         InlineKeyboardButton
                                 .builder()
                                 .text(
-                                        CallbackCommand.SELECTED_MJ_LOCATION.getFullText()
-                                                .replace("{m_name}", dto.name())
-                                                .replace("{km}", dto.distance().toString())
+                                        "📍 " + dto.distance() + " KM uzoqda. Yo'nalishni olish"
+//                                        CallbackCommand.SELECTED_MJ_LOCATION.getFullText()
+//                                                .replace("{m_name}", dto.name())
+//                                                .replace("{km}", dto.distance().toString())
                                 )
                                 .callbackData(CallbackCommand.SELECTED_MJ_LOCATION.getText() + "_" + dto.id())
                                 .build()

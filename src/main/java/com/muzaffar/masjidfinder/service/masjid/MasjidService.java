@@ -13,4 +13,6 @@ public interface MasjidService {
     List<MasjidDTO> getFavsByUserId(Long userId);
 
     MasjidDTO getDefaultMasjidByUserId(Long userId);
+
+    MasjidDTO setMasjidAsFav(Long id, Long masjidId);
 }

@@ -1,3 +1,6 @@
 **/target/
 **/.idea/
 **/.DS_store
+
+# property file for local testing
+src/main/resources/application-local.yaml
