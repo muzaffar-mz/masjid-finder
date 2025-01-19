@@ -1,10 +1,21 @@
 package com.muzaffar.masjidfinder.service.text.model;
 
+import com.muzaffar.masjidfinder.domain.entity.Text;
+
+import java.time.LocalDateTime;
+
 public record TextDTO(
         String text,
-        Boolean isFormatted
+        Boolean isFormatted,
+        LocalDateTime expiry
 ) {
-    public TextDTO(String text) {
-        this(text, false); // Default value for isFormatted
+
+    public TextDTO(String text, Boolean bo) {
+        this(text, bo, null); // Default value for isFormatted
     }
+
+    public TextDTO(Text text) {
+        this(text.getMessage(), text.getIsFormatted(), LocalDateTime.now().plusDays(30));
+    }
+
 }

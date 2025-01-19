@@ -1,24 +1,25 @@
 package com.muzaffar.masjidfinder.service.text.impl;
 
 import com.muzaffar.masjidfinder.bot.enums.Command;
+import com.muzaffar.masjidfinder.domain.repository.TextRepo;
 import com.muzaffar.masjidfinder.service.text.TextService;
 import com.muzaffar.masjidfinder.service.text.model.TextDTO;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 @Service
+@RequiredArgsConstructor
 public class TextServiceImpl implements TextService {
 
-    //TODO
-    // Abdulloh
-    // 1. Create Text entity class
-    // 2. Create TextRepo interface
-    // 3. Create HashMap variable with key String and Value CachedTextDTO (can be found in model folder)
-    // 4. Upon initiation of this class (@PostConstruct) all texts from the repository should be retrieved and loaded into a map
-    //      Expiration time is LocalDateTime.now() + 30 days
-    // 5. private method that gets CachedTextDTO, checks whether expired, if not then returns CachedTextDTO, otherwise
-    //      gets text from repo using <<command>> field
-    // 6. another public method that reloads all texts from the repo and puts into hashmap
-
+    private final TextRepo textRepo;
+    private Map<String, TextDTO> cache;
 
     @Override
     public TextDTO temporaryUnavailable() {
@@ -40,7 +41,45 @@ public class TextServiceImpl implements TextService {
 
     @Override
     public TextDTO getText(String command) {
+        return getCached(command);
+    }
 
+
+    @PostConstruct
+    private void init() {
+        this.cache = new HashMap<>();
+        cache.putAll(getAll());
+    }
+
+    @Override
+    public void reloadTexts() {
+        this.cache.clear();
+        this.cache.putAll(getAll());
+    }
+
+    private TextDTO getCached(String command) {
+
+        if (true) {
+            return getTextForTestEnvironment(command);
+        }
+
+        //TODO
+        var textDTO = this.cache.get(command);
+
+        if (Objects.isNull(textDTO) || textDTO.expiry().isBefore(LocalDateTime.now())) {
+            var textOptional = textRepo.findByCommandButton(Command.valueOf(command));
+
+            if (textOptional.isEmpty()) {
+                return unrecognised();
+            }
+
+            textDTO = new TextDTO(textOptional.get());
+            this.cache.put(command, textDTO);
+        }
+        return textDTO;
+    }
+
+    private TextDTO getTextForTestEnvironment(String command) {
         //TEMPORARY SOLUTION
         if (command.equals("/start")) {
             return new TextDTO("""
@@ -87,5 +126,16 @@ public class TextServiceImpl implements TextService {
         }
 
         return temporaryUnavailable();
+    }
+
+    private Map<String, TextDTO> getAll() {
+        return textRepo.findAll()
+                .stream()
+                .collect(Collectors.toMap(
+                        text -> text.getCommandButton().getText(),
+                        TextDTO::new,
+                        (existing, replacement) -> existing,
+                        HashMap::new
+                ));
     }
 }

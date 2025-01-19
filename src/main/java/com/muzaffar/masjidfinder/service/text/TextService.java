@@ -9,4 +9,6 @@ public interface TextService {
     TextDTO temporaryUnavailable();
 
     TextDTO unrecognised();
+
+    void reloadTexts();
 }
