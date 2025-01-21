@@ -11,12 +11,14 @@
 	<groupId>com.muzaffar</groupId>
 	<artifactId>masjid-finder</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<organization>
-		<name>mmuratov</name>
-	</organization>
 	<name>masjid-finder</name>
 	<description>Masjid Locations and Community prayer times Project</description>
 	<properties>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
+		<docker.username>mmuratov</docker.username>
+		<docker.image.name>masjid-finder</docker.image.name>
+		<docker.image.tag/>
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
@@ -157,7 +159,7 @@
 						</platforms>
 					</from>
 					<to>
-						<image>docker.io/${organization.name}/${project.artifactId}:${project.version}</image>
+						<image>docker.io/${docker.username}/${docker.image.name}:${docker.image.tag}</image>
 						<tags>
 							<tag>latest</tag>
 						</tags>

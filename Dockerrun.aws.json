@@ -1,0 +1,23 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "masjid-finder-dev",
+      "image": "mmuratov/masjid-finder:20.01.2025.16.03.38",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 8080
+        }
+      ],
+      "environment": [
+        {
+          "name": "SPRING_DATASOURCE_URL",
+          "value": "jdbc:postgresql://awseb-e-zzuvperx5x-stack-awsebrdsdatabase-gaai7s2rlouw.cloawgwuccj1.ap-south-1.rds.amazonaws.com:5432/masjid_bot"
+        }
+      ]
+    }
+  ]
+}

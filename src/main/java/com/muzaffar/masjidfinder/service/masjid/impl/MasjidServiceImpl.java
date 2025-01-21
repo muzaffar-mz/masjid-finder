@@ -6,7 +6,6 @@ import com.muzaffar.masjidfinder.domain.repository.MasjidRepo;
 import com.muzaffar.masjidfinder.domain.repository.UserMasjidRepo;
 import com.muzaffar.masjidfinder.model.LocationDTO;
 import com.muzaffar.masjidfinder.service.masjid.MasjidService;
-import com.muzaffar.masjidfinder.service.masjid.mapper.MasjidMapper;
 import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -90,6 +89,15 @@ public class MasjidServiceImpl implements MasjidService {
         var masjid = masjidRepo.findById(def.get().getMasjidId());
 
         return masjid.map(MasjidDTO::new).orElse(null);
+    }
+
+    @Override
+    public MasjidDTO setMasjidAsFav(Long userId, Long masjidId) {
+        UserMasjid dto = new UserMasjid();
+        dto.setMasjidId(masjidId);
+        dto.setUserId(userId);
+        userMasjidRepo.save(dto);
+        return getMasjid(masjidId);
     }
 
     private List<MasjidDTO> orderMasjidsByDistanceAscending(List<Masjid> masjids, LocationDTO dto) {
