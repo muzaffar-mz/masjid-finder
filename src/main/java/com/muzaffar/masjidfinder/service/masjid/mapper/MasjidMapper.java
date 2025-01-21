@@ -11,5 +11,4 @@ public interface MasjidMapper {
     MasjidMapper INSTANCE = Mappers.getMapper(MasjidMapper.class);
 
     MasjidDTO toMasjidDTO(Masjid masjid, Double distance);
-    MasjidDTO toMasjidDTO(Masjid masjid);
 }

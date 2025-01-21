@@ -29,4 +29,8 @@ public interface UpdateHandler {
     SendMessage temporaryUnavailable(Update update);
 
     List<PartialBotApiMethod<?>> notRecognised(Update update);
+
+    SendMessage setMasjidAsFav(Update update, String newCommand);
+
+    SendMessage removeMasjidFromFav(Update update);
 }

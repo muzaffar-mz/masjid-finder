@@ -32,6 +32,7 @@ class UserRepoTest extends AbstractTestcontainers {
         user.setUsername("@test_user_name");
         user.setFirstname("First_name");
         user.setLastname("Last_name");
+        user.setChat(false);
         user.setStatus(UserStatus.ACTIVE);
         user.setRole(UserRole.USER);
 

@@ -21,7 +21,6 @@ public class MasjidServiceImpl implements MasjidService {
 
     private final MasjidRepo masjidRepo;
     private final UserMasjidRepo userMasjidRepo;
-    private final MasjidMapper masjidMapper = MasjidMapper.INSTANCE;
 
 
     private static final double EARTH_RADIUS = 6_371.00;
@@ -50,7 +49,7 @@ public class MasjidServiceImpl implements MasjidService {
     public List<MasjidDTO> getMasjidByName(String name) {
         List<Masjid> masjids = masjidRepo.findByNameContainingIgnoreCase(name);
         return masjids.stream()
-                .map(masjidMapper::toMasjidDTO)
+                .map(MasjidDTO::new)
                 .toList();
     }
 
