@@ -13,6 +13,7 @@ public interface UserMapper {
     @Mapping(target = "role", constant = "USER")
     User toUser(String phone);
 
+    @Mapping(target = "chatEnabled", source = "chat")
     UserDTO toUserDTO(User user);
 
 

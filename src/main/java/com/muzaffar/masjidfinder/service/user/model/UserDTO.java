@@ -14,6 +14,7 @@ public record UserDTO(
         String lastname,
         Long telegramId,
         String password,
+        Boolean chatEnabled,
         MasjidDTO defaultMasjidId,
         List<MasjidDTO> masajid
 ) {
@@ -27,6 +28,7 @@ public record UserDTO(
                 user.getLastname(),
                 user.getTelegramId(),
                 user.getPassword(),
+                user.getChat(),
                 null,
                 null
         );
@@ -41,6 +43,7 @@ public record UserDTO(
                 user.getLastname(),
                 user.getTelegramId(),
                 user.getPassword(),
+                user.getChat(),
                 defaultOne,
                 masajid
         );

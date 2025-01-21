@@ -13,6 +13,7 @@ public enum Command {
     ABOUT("ℹ️ Bot Haqida"),
     FAVORITES("💚 Mening Masjidlarim"),
     GET_THE_CLOSEST_MASAJID("📍 Eng yaqin masjidlarni ko'rish"),
+    FIND_BY_MASJID_NAME("\uD83D\uDD0E Masjidni izlash"),
     BACK("⏮️ Asosiy bo'limga qaytish"),
     OTHER("DIFF"),
     ;

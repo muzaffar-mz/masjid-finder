@@ -5,6 +5,7 @@ import com.muzaffar.masjidfinder.bot.enums.Command;
 import com.muzaffar.masjidfinder.bot.model.TgUserDTO;
 import com.muzaffar.masjidfinder.bot.util.KeyboardUtil;
 import com.muzaffar.masjidfinder.bot.util.UpdateUtil;
+import com.muzaffar.masjidfinder.domain.repository.UserRepo;
 import com.muzaffar.masjidfinder.model.LocationDTO;
 import com.muzaffar.masjidfinder.service.masjid.MasjidService;
 import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
@@ -22,6 +23,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.muzaffar.masjidfinder.bot.util.UpdateUtil.*;
 
@@ -33,9 +35,11 @@ public class UpdateHandlerImpl implements UpdateHandler {
     private final UserService userService;
     private final MasjidService masjidService;
     private final TextService textService;
+    private final UserRepo userRepo;
 
     @Override
     public SendMessage start(Update update, String command) {
+        userService.userUpdateChatsState(update, false);
         userService.getOrSaveByTgUserDTO(user(update));
 
         var textDTO = textService.getText(command);
@@ -136,6 +140,53 @@ public class UpdateHandlerImpl implements UpdateHandler {
     }
 
     @Override
+    public List<PartialBotApiMethod<?>> findMasjidByName(Update update) {
+        List<PartialBotApiMethod<?>> returnList = new ArrayList<>();
+        Long chatId = Long.valueOf(getChatId(update));
+        String masjidName = update.getMessage().getText(); // Get the masjid name
+
+        var masajid = masjidService.getMasjidByName(masjidName);
+        if (masajid.isEmpty()) {
+            returnList.add(SendMessage.builder()
+                    .chatId(chatId)
+                    .text("\n *Masjid nomida hatolik yoki siz kiritgan masjid ma'lumoti mavjud emas.* ")
+                    .replyMarkup(KeyboardUtil.defaultKeyboard())
+                    .build());
+            return returnList;
+        }
+
+
+        for (MasjidDTO masjid : masajid) {
+            returnList.add(SendMessage.builder()
+                    .chatId(chatId)
+                    .text(masjid.getNameAndPrayerTimesForBot())
+                    .replyMarkup(KeyboardUtil.defaultKeyboard())
+                    .build());
+
+            if (masjid.latitude() != null && masjid.longitude() != null) {
+                returnList.add(SendLocation.builder()
+                        .chatId(chatId)
+                        .latitude(masjid.latitude())
+                        .longitude(masjid.longitude())
+                        .build());
+            } else {
+                returnList.add(SendMessage.builder()
+                        .chatId(chatId)
+                        .text("\n *Masjid nomida hatolik yoki siz kiritgan masjid manzili mavjud emas.* " + masjid.name())
+                        .build());
+            }
+        }
+
+        return returnList;
+    }
+
+    @Override
+    public void enableMasjidNameInput(Update update) {
+        userService.userUpdateChatsState(update, true);
+    }
+
+
+    @Override
     public SendMessage temporaryUnavailable(Update update) {
 
         var textDTO = textService.temporaryUnavailable();
@@ -144,9 +195,21 @@ public class UpdateHandlerImpl implements UpdateHandler {
     }
 
     @Override
-    public SendMessage notRecognised(Update update) {
+    public List<PartialBotApiMethod<?>> notRecognised(Update update) {
+        Long userId = user(update).telegramId();
+        List<PartialBotApiMethod<?>> responseList = new ArrayList<>();
+
+        if (userService.isChatEnabled(userId)) {
+            List<PartialBotApiMethod<?>> response = findMasjidByName(update);
+
+            userService.userUpdateChatsState(update, false);
+            responseList.addAll(response);
+
+            return responseList;
+        }
         var textDTO = textService.unrecognised();
-        return sendMessage(getChatId(update), textDTO, KeyboardUtil.defaultKeyboard());
+       responseList.add(sendMessage(getChatId(update), textDTO, KeyboardUtil.defaultKeyboard()));
+       return responseList;
     }
 
     public static TgUserDTO user(Update update) {

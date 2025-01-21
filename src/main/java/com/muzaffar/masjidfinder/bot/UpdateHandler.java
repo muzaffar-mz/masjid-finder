@@ -20,7 +20,11 @@ public interface UpdateHandler {
 
     List<SendMessage> favorites(Update update, String command);
 
+    List<PartialBotApiMethod<?>> findMasjidByName(Update update);
+
+    void enableMasjidNameInput(Update update);
+
     SendMessage temporaryUnavailable(Update update);
 
-    SendMessage notRecognised(Update update);
+    List<PartialBotApiMethod<?>> notRecognised(Update update);
 }

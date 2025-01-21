@@ -73,6 +73,17 @@ public class UpdateMapperImpl implements UpdateMapper {
                     return returnList;
                 }
 
+                if(Objects.equals(command, Command.FIND_BY_MASJID_NAME.getText())) {
+                    updateHandler.enableMasjidNameInput(update);
+                    sendMessage = SendMessage.builder()
+                            .chatId(getChatId(update))
+                            .text("Masjid rasmiy nomini kiriting:")
+                            .build();
+
+                    returnList.add(sendMessage);
+                    return returnList;
+                }
+
                 if (Objects.equals(command, Command.BACK.getText())) {
                     sendMessage = updateHandler.mainMenu(update, command);
                     returnList.add(sendMessage);
@@ -118,8 +129,8 @@ public class UpdateMapperImpl implements UpdateMapper {
         }
 
         //if not recognized
-        sendMessage = updateHandler.notRecognised(update);
-        returnList.add(sendMessage);
+        List<PartialBotApiMethod<?>> messages = updateHandler.notRecognised(update);
+        returnList.addAll(messages);
         return returnList;
     }
 

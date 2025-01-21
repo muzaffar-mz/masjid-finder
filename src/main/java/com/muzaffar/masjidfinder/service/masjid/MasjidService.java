@@ -10,6 +10,8 @@ public interface MasjidService {
 
     MasjidDTO getMasjid(Long id);
 
+    List<MasjidDTO> getMasjidByName(String masjidName);
+
     List<MasjidDTO> getFavsByUserId(Long userId);
 
     MasjidDTO getDefaultMasjidByUserId(Long userId);

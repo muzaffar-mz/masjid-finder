@@ -56,7 +56,7 @@ public class KeyboardUtil {
         rowTwo.add(favoriteMasajid());
 
         rowThree.add(aboutBotButton());
-
+        rowThree.add(findByMasjidButton());
 
         List<KeyboardRow> rows = new ArrayList<>();
         rows.add(rowOne);
@@ -116,6 +116,13 @@ public class KeyboardUtil {
                 .builder()
                 .text(Command.GET_THE_CLOSEST_MASAJID.getText())
                 .requestLocation(true)
+                .build();
+    }
+
+    private static KeyboardButton findByMasjidButton(){
+        return KeyboardButton
+                .builder()
+                .text(Command.FIND_BY_MASJID_NAME.getText())
                 .build();
     }
 

@@ -52,6 +52,9 @@ public class User extends BaseEntity {
     @Column(name = "notification")
     private Boolean notification = false;
 
+    @Column(name = "chat")
+    private Boolean chat = false;
+
 
 
 }

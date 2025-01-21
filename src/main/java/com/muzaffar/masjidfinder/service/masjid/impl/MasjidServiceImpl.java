@@ -13,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.InputMismatchException;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -25,6 +22,7 @@ public class MasjidServiceImpl implements MasjidService {
 
     private final MasjidRepo masjidRepo;
     private final UserMasjidRepo userMasjidRepo;
+    private final MasjidMapper masjidMapper = MasjidMapper.INSTANCE;
 
 
     private static final double EARTH_RADIUS = 6_371.00;
@@ -47,6 +45,14 @@ public class MasjidServiceImpl implements MasjidService {
                 }
         );
         return new MasjidDTO(masjid);
+    }
+
+    @Override
+    public List<MasjidDTO> getMasjidByName(String name) {
+        List<Masjid> masjids = masjidRepo.findByNameContainingIgnoreCase(name);
+        return masjids.stream()
+                .map(masjidMapper::toMasjidDTO)
+                .toList();
     }
 
     @Override
@@ -135,7 +141,7 @@ public class MasjidServiceImpl implements MasjidService {
         Masjid masjid13 = getMasjid("Qozirabot", 69.21566963369364, 41.27973347962563);
         Masjid masjid14 = getMasjid("Maruf ota", 69.20042127410578, 41.243348500068414);
         Masjid masjid15 = getMasjid("Sobithon Hoji", 69.23099045342889, 41.291901449654645);
-        Masjid masjid16 = getMasjid("Tinchik", 69.17380034967394, 41.265612159600394);
+        Masjid masjid16 = getMasjid("Tinchlik", 69.17380034967394, 41.265612159600394);
 
         List<Masjid> list = new ArrayList<>();
         list.add(masjid1);
