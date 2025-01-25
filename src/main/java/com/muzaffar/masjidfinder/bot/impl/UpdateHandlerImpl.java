@@ -5,6 +5,7 @@ import com.muzaffar.masjidfinder.bot.model.TgUserDTO;
 import com.muzaffar.masjidfinder.bot.util.KeyboardUtil;
 import com.muzaffar.masjidfinder.bot.util.UpdateUtil;
 import com.muzaffar.masjidfinder.model.LocationDTO;
+import com.muzaffar.masjidfinder.service.cache.CacheService;
 import com.muzaffar.masjidfinder.service.masjid.MasjidService;
 import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
 import com.muzaffar.masjidfinder.service.text.TextService;
@@ -20,7 +21,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.muzaffar.masjidfinder.bot.util.UpdateUtil.*;
 
@@ -32,6 +35,7 @@ public class UpdateHandlerImpl implements UpdateHandler {
     private final UserService userService;
     private final MasjidService masjidService;
     private final TextService textService;
+    private final CacheService cacheService;
 
     @Override
     public SendMessage start(Update update, String command) {
@@ -52,6 +56,11 @@ public class UpdateHandlerImpl implements UpdateHandler {
     public List<SendMessage> getMasajid(Update update, String command) {
         List<SendMessage> result = new ArrayList<>();
         final var chatId = getChatId(update);
+        final var user = userService.getUser(user(update));
+        final var favs = user.masajid()
+                .stream()
+                .map(MasjidDTO::id)
+                .collect(Collectors.toCollection(HashSet::new));
 
         //TODO
         var mainText = textService.getText("location");
@@ -62,7 +71,7 @@ public class UpdateHandlerImpl implements UpdateHandler {
         var masajid = masjidService.getMasajidClosestToLocation(new LocationDTO(location.getLatitude(), location.getLongitude()));
         for (MasjidDTO masjid : masajid) {
             final String text = masjid.getNameAndPrayerTimesForBot();
-            var message = UpdateUtil.sendMessage(chatId, text, KeyboardUtil.getMasjidKeyboardV2(masjid));
+            var message = UpdateUtil.sendMessage(chatId, text, KeyboardUtil.getMasjidKeyboardV3(masjid, favs.contains(masjid.id())));
             message.enableMarkdownV2(true);
             result.add(message);
         }
@@ -126,7 +135,7 @@ public class UpdateHandlerImpl implements UpdateHandler {
 
         for (MasjidDTO dto : user.masajid()) {
             final String text = dto.getNameAndPrayerTimesForBot();
-            var message = UpdateUtil.sendMessage(chatId, text, KeyboardUtil.getMasjidKeyboardV3(dto));
+            var message = UpdateUtil.sendMessage(chatId, text, KeyboardUtil.getMasjidKeyboardV3(dto, true));
             message.enableMarkdownV2(true);
             result.add(message);
         }
@@ -160,8 +169,64 @@ public class UpdateHandlerImpl implements UpdateHandler {
     }
 
     @Override
-    public SendMessage removeMasjidFromFav(Update update) {
-        return null;
+    public SendMessage removeMasjidFromFav(Update update, String command) {
+        var user = userService.getUser(user(update));
+        var masjid = masjidService.removeMasjidFromFav(user.id(), getMasjidId(update));
+
+        //TODO text is not not final
+        var tempText = textService.getText(command);
+        var text = new TextDTO(tempText.text().replace("{masjid}", masjid.name()), tempText.isFormatted());
+        return sendMessage(getChatId(update), text, KeyboardUtil.defaultKeyboard());
+    }
+
+    @Override
+    public SendMessage commPrayerTimes(Update update, String command) {
+        var textDTO = textService.getText(command);
+        return sendMessage(getChatId(update), textDTO, KeyboardUtil.searchOrSendLocation());
+    }
+
+    @Override
+    public SendMessage searchMasjid(Update update, String command) {
+        String chatId = getChatId(update);
+        var isAllowed = cacheService.isSearchModeAllowed(chatId);
+        var textDTO = textService.getText(command, isAllowed);
+        return sendMessage(chatId, textDTO, KeyboardUtil.backKeyboard());
+    }
+
+    @Override
+    public List<SendMessage> findMasajidByName(Update update, String name) {
+        List<SendMessage> result = new ArrayList<>();
+        var chatId = getChatId(update);
+        var user = userService.getUser(user(update));
+        var favMasajid = user.masajid()
+                .stream()
+                .map(MasjidDTO::id)
+                .collect(Collectors.toCollection(HashSet::new));
+
+        var masajid = masjidService.findMasajidByName(name);
+        if (masajid.isEmpty()) {
+            var textDTO = textService.getNoMasajidFoundText();
+            var sendMessage = sendMessage(chatId, textDTO, KeyboardUtil.backKeyboard());
+            result.add(sendMessage);
+            return result;
+        }
+
+        var firstText = textService.getFoundMasajidText();
+
+        result.add(sendMessage(chatId, firstText, KeyboardUtil.backKeyboard()));
+
+        for (MasjidDTO dto : masajid) {
+            final String text = dto.getNameAndPrayerTimesForBot();
+            var message = UpdateUtil.sendMessage(chatId, text, KeyboardUtil.getMasjidKeyboardV3(dto, favMasajid.contains(dto.id())));
+            message.enableMarkdownV2(true);
+            result.add(message);
+        }
+
+        var lastText = textService.getYouCanTryAgain();
+
+        result.add(message(chatId, lastText));
+
+        return result;
     }
 
     public static TgUserDTO user(Update update) {

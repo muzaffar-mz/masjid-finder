@@ -23,6 +23,12 @@ public class UpdateUtil {
                 .build();
     }
 
+    public static SendMessage message(String chatId, TextDTO text) {
+        var message = message(chatId, text.text());
+        message.enableMarkdownV2(text.isFormatted());
+        return message;
+    }
+
     public static SendMessage message(String chatId, String text) {
         return new SendMessage(chatId, text);
     }

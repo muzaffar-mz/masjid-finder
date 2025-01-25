@@ -15,4 +15,8 @@ public interface MasjidService {
     MasjidDTO getDefaultMasjidByUserId(Long userId);
 
     MasjidDTO setMasjidAsFav(Long id, Long masjidId);
+
+    List<MasjidDTO> findMasajidByName(String name);
+
+    MasjidDTO removeMasjidFromFav(Long userId, Long masjidId);
 }

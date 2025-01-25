@@ -4,6 +4,7 @@ import com.muzaffar.masjidfinder.bot.UpdateHandler;
 import com.muzaffar.masjidfinder.bot.UpdateMapper;
 import com.muzaffar.masjidfinder.bot.enums.CallbackCommand;
 import com.muzaffar.masjidfinder.bot.enums.Command;
+import com.muzaffar.masjidfinder.service.cache.CacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import static com.muzaffar.masjidfinder.bot.util.UpdateUtil.*;
 public class UpdateMapperImpl implements UpdateMapper {
 
     private final UpdateHandler updateHandler;
+    private final CacheService cacheService;
 
 
     @Override
@@ -56,7 +58,15 @@ public class UpdateMapperImpl implements UpdateMapper {
 
                 if (Objects.equals(command, Command.COMMUNITY_PRAYER_TIMES.getText())) {
                     //TODO either send location or do search
-                    sendMessage = updateHandler.temporaryUnavailable(update);
+//                    sendMessage = updateHandler.temporaryUnavailable(update);
+                    sendMessage = updateHandler.commPrayerTimes(update, command);
+                    returnList.add(sendMessage);
+                    return returnList;
+
+                }
+
+                if (Objects.equals(command, Command.SEARCH.getText())) {
+                    sendMessage = updateHandler.searchMasjid(update, command);
                     returnList.add(sendMessage);
                     return returnList;
                 }
@@ -79,6 +89,12 @@ public class UpdateMapperImpl implements UpdateMapper {
                     return returnList;
                 }
 
+                if (cacheService.isInSearchMode(getChatId(update))) {
+                    var result = updateHandler.findMasajidByName(update, command);
+                    returnList.addAll(result);
+                    return returnList;
+                }
+
                 if (hasLocation(update)) {
                     var result = updateHandler.getMasajid(update, command);
                     returnList.addAll(result);
@@ -95,10 +111,6 @@ public class UpdateMapperImpl implements UpdateMapper {
                     return returnList;
                 }
 
-                if (Objects.equals(newCommand, CallbackCommand.SET_MJ_AS_DEFAULT.getText())) {
-                    //TODO
-                }
-
                 if (Objects.equals(newCommand, CallbackCommand.SET_MJ_AS_FAV.getText())) {
                     sendMessage = updateHandler.setMasjidAsFav(update, newCommand);
                     returnList.add(sendMessage);
@@ -106,7 +118,7 @@ public class UpdateMapperImpl implements UpdateMapper {
                 }
 
                 if (Objects.equals(newCommand, CallbackCommand.REMOVE_FROM_MJ_AS_FAV.getText())) {
-                    sendMessage = updateHandler.removeMasjidFromFav(update);
+                    sendMessage = updateHandler.removeMasjidFromFav(update, newCommand);
                     returnList.add(sendMessage);
                     return returnList;
                 }

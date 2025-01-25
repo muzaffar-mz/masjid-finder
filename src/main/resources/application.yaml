@@ -27,3 +27,4 @@ server:
 telegram:
   token: 7772684659:AAEo1N2LJrxK8talgCq9V_JyEHs-vUjZM0A
   username: masjid_finder_dev_bot
+  max-attempts: 5

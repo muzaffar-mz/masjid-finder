@@ -51,7 +51,7 @@ public class MasjidServiceImpl implements MasjidService {
     @Override
     public List<MasjidDTO> getFavsByUserId(Long userId) {
 
-        var favs = userMasjidRepo.findAllByUserId(userId);
+        var favs = userMasjidRepo.findAllByUserIdAndDeletedIsFalse(userId);
 
         if (favs.isEmpty()) {
             return List.of();
@@ -92,6 +92,28 @@ public class MasjidServiceImpl implements MasjidService {
         dto.setUserId(userId);
         userMasjidRepo.save(dto);
         return getMasjid(masjidId);
+    }
+
+    @Override
+    public MasjidDTO removeMasjidFromFav(Long userId, Long masjidId) {
+        log.info("Removing Masjid {} from User {} favorite list", masjidId, userId);
+        var userMasjidOptional = userMasjidRepo.findByUserIdAndMasjidId(userId, masjidId);
+
+        if (userMasjidOptional.isPresent()) {
+            var userMasjid = userMasjidOptional.get();
+            userMasjid.setDeleted(true);
+            userMasjidRepo.save(userMasjid);
+        }
+
+        return getMasjid(masjidId);
+    }
+
+    @Override
+    public List<MasjidDTO> findMasajidByName(String name) {
+        return masjidRepo.findAllByNameContainingIgnoreCase(name)
+                .stream()
+                .map(MasjidDTO::new)
+                .toList();
     }
 
     private List<MasjidDTO> orderMasjidsByDistanceAscending(List<Masjid> masjids, LocationDTO dto) {
@@ -143,7 +165,7 @@ public class MasjidServiceImpl implements MasjidService {
         Masjid masjid13 = getMasjid("Qozirabot", 69.21566963369364, 41.27973347962563);
         Masjid masjid14 = getMasjid("Maruf ota", 69.20042127410578, 41.243348500068414);
         Masjid masjid15 = getMasjid("Sobithon Hoji", 69.23099045342889, 41.291901449654645);
-        Masjid masjid16 = getMasjid("Tinchik", 69.17380034967394, 41.265612159600394);
+        Masjid masjid16 = getMasjid("Tinchlik", 69.17380034967394, 41.265612159600394);
 
         List<Masjid> list = new ArrayList<>();
         list.add(masjid1);

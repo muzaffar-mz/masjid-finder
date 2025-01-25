@@ -8,4 +8,5 @@ import java.util.List;
 public interface MasjidRepo extends JpaRepository<Masjid, Long> {
 
     List<Masjid> findAllByIdIn(List<Long> ids);
+    List<Masjid> findAllByNameContainingIgnoreCase(String name);
 }

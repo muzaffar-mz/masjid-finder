@@ -14,6 +14,7 @@ public enum Command {
     FAVORITES("💚 Mening Masjidlarim"),
     GET_THE_CLOSEST_MASAJID("📍 Eng yaqin masjidlarni ko'rish"),
     BACK("⏮️ Asosiy bo'limga qaytish"),
+    SEARCH("🔍 Masjid nomi bilan qidirish"),
     OTHER("DIFF"),
     ;
 

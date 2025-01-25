@@ -8,4 +8,7 @@ public interface CacheService {
     void saveSentMessagesId(String chatId, List<Integer> messages);
 
     List<Integer> getMessagesIdByChatId(String chatId);
+
+    Boolean isSearchModeAllowed(String chatId);
+    Boolean isInSearchMode(String chatId);
 }

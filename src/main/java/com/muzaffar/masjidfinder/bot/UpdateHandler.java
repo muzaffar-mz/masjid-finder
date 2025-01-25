@@ -27,5 +27,11 @@ public interface UpdateHandler {
 
     SendMessage setMasjidAsFav(Update update, String command);
 
-    SendMessage removeMasjidFromFav(Update update);
+    SendMessage removeMasjidFromFav(Update update, String command);
+
+    SendMessage commPrayerTimes(Update update, String command);
+
+    SendMessage searchMasjid(Update update, String command);
+
+    List<SendMessage> findMasajidByName(Update update, String name);
 }

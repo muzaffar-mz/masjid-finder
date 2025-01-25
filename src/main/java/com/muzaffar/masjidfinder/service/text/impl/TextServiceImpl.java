@@ -41,10 +41,47 @@ public class TextServiceImpl implements TextService {
     }
 
     @Override
+    public TextDTO getFoundMasajidText() {
+        return new TextDTO("""
+                *Sizning so'ro'vingiz bo'yicha topilgan Masjidlar:* ⬇️
+                """, true);
+    }
+
+    @Override
+    public TextDTO getYouCanTryAgain() {
+        return new TextDTO("""
+                *Agar siz qidirgan masjid topilmagan bo'lsa boshqa nom bilan qaytadan urunib ko'ring:* ⬇️
+                """, true);
+    }
+
+    @Override
     public TextDTO getText(String command) {
         return getCached(command);
     }
 
+    @Override
+    public TextDTO getText(String command, Boolean isAllowed) {
+        //TODO
+        // TEMPORARY SOLUTION
+
+        if (isAllowed) {
+            return new TextDTO("""
+                    🔍 *Iltimos, Masjid nomini kiriting:* ⬇️
+                    """, true);
+        }
+
+        return new TextDTO("""
+                *Iltimos, keyinroq urunib ko'ring*
+                """, true);
+    }
+
+    @Override
+    public TextDTO getNoMasajidFoundText() {
+        return new TextDTO("""
+                *Sizning so'rovingizga mos keladigan Masjid topilmadi\\.* 
+                \n*Qaytadan boshqa nom bilan urunib ko'ring:* ⬇️
+                """, true);
+    }
 
     @PostConstruct
     private void init() {
@@ -100,7 +137,7 @@ public class TextServiceImpl implements TextService {
 
         if (command.equals(Command.CLOSEST_MASJID.getText())) {
             return new TextDTO("""
-                    *Eng yaqin Masjidlarni 🕌 va Namoat Namozlarni 🕐 ko'rish uchun joylashuvni yuboring* 📿 
+                    *Eng yaqin Masjidlarni 🕌 va Jamoat Namozlarni 🕐 ko'rish uchun joylashuvni yuboring* 📿 
                     """, true);
         }
 
@@ -129,6 +166,24 @@ public class TextServiceImpl implements TextService {
         if (command.equals(CallbackCommand.SET_MJ_AS_FAV.getText())) {
             return new TextDTO("""
                     *«{masjid}» «Mening Masjidlarim» ro’yxatiga qo'shildi\\!*\
+                    """, true);
+        }
+
+        if (command.equals(CallbackCommand.REMOVE_FROM_MJ_AS_FAV.getText())) {
+            return new TextDTO("""
+                    *«{masjid}» «Mening Masjidlarim» ro’yxatiga chiqarildi\\!*\
+                    """, true);
+        }
+
+        if (command.equals(Command.COMMUNITY_PRAYER_TIMES.getText())) {
+            return new TextDTO("""
+                    *Masjid namoz vaqtlarini olish uchun kerakli tugmani bosing* ⏬
+                    """, true);
+        }
+
+        if (command.equals(Command.SEARCH.getText())) {
+            return new TextDTO("""
+                    *🔍 Iltimos Masjid nomini kiriting: ⬇️
                     """, true);
         }
 
