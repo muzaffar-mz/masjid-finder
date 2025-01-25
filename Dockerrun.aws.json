@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "masjid-finder-dev",
-      "image": "mmuratov/masjid-finder:20.01.2025.16.03.38",
+      "image": "mmuratov/masjid-finder:25.01.2025.16.55.52",
       "essential": true,
       "memory": 512,
       "portMappings": [
