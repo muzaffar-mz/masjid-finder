@@ -10,8 +10,8 @@ public record TextDTO(
         LocalDateTime expiry
 ) {
 
-    public TextDTO(String text, Boolean bo) {
-        this(text, bo, null); // Default value for isFormatted
+    public TextDTO(String text, Boolean isFormatted) {
+        this(text, isFormatted, null); // Default value for isFormatted
     }
 
     public TextDTO(Text text) {

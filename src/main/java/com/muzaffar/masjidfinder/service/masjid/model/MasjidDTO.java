@@ -57,4 +57,8 @@ public record MasjidDTO(
         return "*" + this.name + "*" + " \nBomdod: %s, Peshin: %s, Asr: %s, Shom: %s, Xufton: %s"
                 .formatted(bomdod, peshin, asr, shom, hufton);
     }
+
+    public String getIdAndName() {
+        return "*" + this.id + "\\. " + this.name + "*";
+    }
 }

@@ -2,6 +2,7 @@ package com.muzaffar.masjidfinder.service.masjid.impl;
 
 import com.muzaffar.masjidfinder.domain.entity.Masjid;
 import com.muzaffar.masjidfinder.domain.entity.UserMasjid;
+import com.muzaffar.masjidfinder.domain.entity.enums.MasjidStatus;
 import com.muzaffar.masjidfinder.domain.repository.MasjidRepo;
 import com.muzaffar.masjidfinder.domain.repository.UserMasjidRepo;
 import com.muzaffar.masjidfinder.model.LocationDTO;
@@ -10,12 +11,17 @@ import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -116,6 +122,34 @@ public class MasjidServiceImpl implements MasjidService {
                 .toList();
     }
 
+    @Override
+    public List<MasjidDTO> getUnverifiedMasajidClosestToLocation(LocationDTO locationDTO) {
+        return List.of();
+//        var masajid = masjidRepo.findAllByStatusIn(List.of(MasjidStatus.DRAFTED, MasjidStatus.DISABLED));
+//        var sorted = orderMasjidsByDistanceAscending(masajid, locationDTO);
+//        return sorted.subList(0, Math.min(sorted.size(), 10));
+    }
+
+    @Override
+    public Pair<List<MasjidDTO>, Long> getFirst15UnverifiedMasajid() {
+        Sort sort = Sort.by("id").ascending();
+        Pageable pageable = PageRequest.of(0, 15, sort);
+        List<MasjidStatus> statuses = List.of(MasjidStatus.DRAFTED, MasjidStatus.DISABLED);
+        var masajid = masjidRepo.findAllByStatusIn(statuses, pageable);
+
+        List<MasjidDTO> result = masajid.stream().map(MasjidDTO::new).collect(Collectors.toList());
+        Long total = masjidRepo.countAllByStatusIn(statuses);
+        return Pair.of(result, total);
+    }
+
+    //    @Override
+//    public List<MasjidDTO> getMasajidClosestToLocation(LocationDTO dto) {
+//        var masjids = masjidRepo.findAll();
+//
+//        var sorted = orderMasjidsByDistanceAscending(masjids, dto);
+//
+//        return sorted.subList(0, Math.min(sorted.size(), 5));
+//    }
     private List<MasjidDTO> orderMasjidsByDistanceAscending(List<Masjid> masjids, LocationDTO dto) {
 
         List<MasjidDTO> result = new ArrayList<>();
@@ -195,6 +229,7 @@ public class MasjidServiceImpl implements MasjidService {
         masjid.setName(name);
         masjid.setLongitude(ln);
         masjid.setLatitude(lat);
+        masjid.setStatus(MasjidStatus.DRAFTED);
         return masjid;
 
     }

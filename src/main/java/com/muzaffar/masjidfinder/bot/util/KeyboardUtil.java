@@ -1,5 +1,6 @@
 package com.muzaffar.masjidfinder.bot.util;
 
+import com.muzaffar.masjidfinder.bot.enums.AdminCommand;
 import com.muzaffar.masjidfinder.bot.enums.CallbackCommand;
 import com.muzaffar.masjidfinder.bot.enums.Command;
 import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
@@ -13,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class KeyboardUtil {
 
@@ -144,6 +146,11 @@ public class KeyboardUtil {
                 .build();
     }
 
+    static Function<AdminCommand, KeyboardButton> getButtonFun =
+    command -> KeyboardButton.builder()
+            .text(command.getText())
+            .build();
+
     //TODO below here is everything chang
 
     public static InlineKeyboardMarkup getMasjidKeyboardV3(MasjidDTO masjid, Boolean isFavorite) {
@@ -215,5 +222,47 @@ public class KeyboardUtil {
                 .oneTimeKeyboard(true)
                 .resizeKeyboard(true)
                 .build();
+    }
+
+    public static ReplyKeyboardMarkup defaultSuperAdminKeyboard() {
+        var replyKeyboardMarkup = ReplyKeyboardMarkup
+                .builder()
+                .oneTimeKeyboard(true)
+                .resizeKeyboard(true)
+                .build();
+
+        List<KeyboardRow> rows = getSuperAdminDefaultKeyboardRows();
+
+        replyKeyboardMarkup.setKeyboard(rows);
+
+        return replyKeyboardMarkup;
+    }
+
+    private static @NotNull List<KeyboardRow> getSuperAdminDefaultKeyboardRows() {
+        var rowOne = new KeyboardRow();
+        var rowTwo = new KeyboardRow();
+        var rowThree = new KeyboardRow();
+
+        rowOne.add(getButtonFun.apply(AdminCommand.UNVERIFIED_MASAJID));
+        rowTwo.add(getButtonFun.apply(AdminCommand.SEARCH));
+        rowThree.add(getButtonFun.apply(AdminCommand.ABOUT));
+        List<KeyboardRow> rows = new ArrayList<>();
+        rows.add(rowOne);
+        rows.add(rowTwo);
+        rows.add(rowThree);
+        return rows;
+    }
+
+    public static InlineKeyboardMarkup getSuperAdminMasjidKeyboard(MasjidDTO dto) {
+        return InlineKeyboardMarkup
+                .builder()
+                .keyboard(getInlineKeyboardRowsForSuperAdmin(dto))
+                .build();
+    }
+
+    private static List<InlineKeyboardRow> getInlineKeyboardRowsForSuperAdmin(MasjidDTO dto) {
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+        rows.add(new InlineKeyboardRow(getInlineKeyboardButtonMasjid(dto)));
+        return rows;
     }
 }

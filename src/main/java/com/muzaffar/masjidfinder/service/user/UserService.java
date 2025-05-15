@@ -7,4 +7,6 @@ public interface UserService {
     UserDTO getOrSaveByTgUserDTO(TgUserDTO dto);
 
     UserDTO getUser(TgUserDTO user);
+
+    UserDTO getOrRegisterSuperAdmin(TgUserDTO tgUser, String phoneNumber);
 }

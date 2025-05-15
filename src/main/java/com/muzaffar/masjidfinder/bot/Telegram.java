@@ -57,7 +57,7 @@ public class Telegram implements SpringLongPollingBot, LongPollingSingleThreadUp
     private void handle(Update update) throws TelegramApiException {
 
         //1. handles update
-        final var sendMessages = updateMapper.map(update);
+        final var sendMessages = updateMapper.adminMap(update);
 
         //2. deletes all previous messages
         var chatId = ((SendMessage) sendMessages.getFirst()).getChatId();

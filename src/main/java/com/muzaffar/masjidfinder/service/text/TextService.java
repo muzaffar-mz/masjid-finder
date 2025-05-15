@@ -5,6 +5,7 @@ import com.muzaffar.masjidfinder.service.text.model.TextDTO;
 public interface TextService {
 
     TextDTO getText(String command);
+    TextDTO getAdminText(String command);
     TextDTO getText(String command, Boolean isAllowed);
 
     TextDTO temporaryUnavailable();
@@ -18,4 +19,6 @@ public interface TextService {
     TextDTO getFoundMasajidText();
 
     TextDTO getYouCanTryAgain();
+
+    TextDTO getWelcomeAdminText();
 }

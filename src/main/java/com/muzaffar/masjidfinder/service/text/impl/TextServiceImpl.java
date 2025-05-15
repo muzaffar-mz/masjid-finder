@@ -1,5 +1,6 @@
 package com.muzaffar.masjidfinder.service.text.impl;
 
+import com.muzaffar.masjidfinder.bot.enums.AdminCommand;
 import com.muzaffar.masjidfinder.bot.enums.CallbackCommand;
 import com.muzaffar.masjidfinder.bot.enums.Command;
 import com.muzaffar.masjidfinder.domain.repository.TextRepo;
@@ -57,6 +58,42 @@ public class TextServiceImpl implements TextService {
     @Override
     public TextDTO getText(String command) {
         return getCached(command);
+    }
+
+    @Override
+    public TextDTO getAdminText(String command) {
+        if (command.equals(AdminCommand.START.getText())) {
+            return new TextDTO("""
+                    *Assalomu alaykum\\!* \
+                   
+                    🌙 *Masjid Sari 🕌 🚶🏽‍♂️Adminlar uchun botimizga xush kelibsiz\\!*\
+                   ️
+                    *Botimizdan foydalanish uchun ro'yxatdan o'ting:*⏬""", true);
+        }
+
+
+        if (command.equals(AdminCommand.UNVERIFIED_MASAJID.getText())) {
+            return new TextDTO("""
+                    *Kerakli tugmani bosing*
+                    """, true);
+        }
+
+        if (command.equals("location")) {
+            return new TextDTO("""
+                    Tasdiqlanmangan eng yaqin masjidlar ro'yxati: ⬇️
+                    """, false);
+        }
+
+        return null;
+    }
+
+    @Override
+    public TextDTO getWelcomeAdminText() {
+        return new TextDTO("""
+                🌙 *Hurmatli Admin️ 👨🏽‍💻\\!*\
+                *Siz botimizdan muvaffaqiyatli ro'yxatdan o'tdingiz\\!*\
+                *Botimizdan foydalanish uchun o'zingizga kerakli tugmani bosing:*⏬
+                """, true);
     }
 
     @Override

@@ -3,7 +3,9 @@ package com.muzaffar.masjidfinder.service.user.impl;
 import com.muzaffar.masjidfinder.AccessDeniedException;
 import com.muzaffar.masjidfinder.bot.model.TgUserDTO;
 import com.muzaffar.masjidfinder.domain.entity.User;
+import com.muzaffar.masjidfinder.domain.entity.enums.UserRole;
 import com.muzaffar.masjidfinder.domain.entity.enums.UserStatus;
+import com.muzaffar.masjidfinder.domain.repository.MetaDataRepo;
 import com.muzaffar.masjidfinder.domain.repository.UserRepo;
 import com.muzaffar.masjidfinder.service.masjid.MasjidService;
 import com.muzaffar.masjidfinder.service.user.UserService;
@@ -23,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final UserMapper userMapper;
     private final MasjidService masjidService;
+    private final MetaDataRepo metaDataRepo;
 
     @Override
     public UserDTO getOrSaveByTgUserDTO(TgUserDTO dto) {
@@ -42,6 +45,25 @@ public class UserServiceImpl implements UserService {
         var favs = masjidService.getFavsByUserId(user.getId());
         var defaultOne = masjidService.getDefaultMasjidByUserId(user.getId());
         return new UserDTO(user, defaultOne, favs);
+    }
+
+    @Override
+    public UserDTO getOrRegisterSuperAdmin(TgUserDTO tgUser, String phoneNumber) {
+
+        // first we check meta whether he has access to the admin bot
+        var listOfMeta = metaDataRepo.findAllByKey("ADMIN_REGISTRATION");
+        var isAllowed = listOfMeta.stream()
+                .anyMatch(meta -> meta.getValue().equals(phoneNumber));
+        if (!isAllowed) {
+            throw new AccessDeniedException("Access for the user with phoneNumber [%s] is denided".formatted(phoneNumber));
+        }
+
+        var user = getOrSaveUser(tgUser);
+        user.setPhone(phoneNumber);
+        user.setRole(UserRole.SUPER_ADMIN);
+        userRepo.save(user);
+
+        return userMapper.toUserDTO(user);
     }
 
     private User getOrSaveUser(TgUserDTO dto) {

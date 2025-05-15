@@ -8,4 +8,6 @@ import java.util.List;
 public interface UpdateMapper {
 
     List<PartialBotApiMethod<?>> map(Update update);
+
+    List<PartialBotApiMethod<?>> adminMap(Update update);
 }
