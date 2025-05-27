@@ -50,10 +50,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getOrRegisterSuperAdmin(TgUserDTO tgUser, String phoneNumber) {
 
+        if (phoneNumber.startsWith("+")) {
+            phoneNumber = phoneNumber.replace("+", "");
+        }
         // first we check meta whether he has access to the admin bot
         var listOfMeta = metaDataRepo.findAllByKey("ADMIN_REGISTRATION");
+        String finalPhoneNumber = phoneNumber;
         var isAllowed = listOfMeta.stream()
-                .anyMatch(meta -> meta.getValue().equals(phoneNumber));
+                .anyMatch(meta -> meta.getValue().equals(finalPhoneNumber));
         if (!isAllowed) {
             throw new AccessDeniedException("Access for the user with phoneNumber [%s] is denided".formatted(phoneNumber));
         }

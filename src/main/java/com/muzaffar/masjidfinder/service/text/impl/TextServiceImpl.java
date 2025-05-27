@@ -90,8 +90,15 @@ public class TextServiceImpl implements TextService {
     @Override
     public TextDTO getWelcomeAdminText() {
         return new TextDTO("""
-                🌙 *Hurmatli Admin️ 👨🏽‍💻\\!*\
-                *Siz botimizdan muvaffaqiyatli ro'yxatdan o'tdingiz\\!*\
+                🌙 *Hurmatli Admin️ 👨🏽‍💻 \\!*\
+                \n *Siz botimizdan muvaffaqiyatli ro'yxatdan o'tdingiz\\!*\
+                \n *Botimizdan foydalanish uchun o'zingizga kerakli tugmani bosing:*⏬
+                """, true);
+    }
+
+    @Override
+    public TextDTO getAdminMainMenu() {
+        return new TextDTO("""
                 *Botimizdan foydalanish uchun o'zingizga kerakli tugmani bosing:*⏬
                 """, true);
     }
@@ -130,6 +137,52 @@ public class TextServiceImpl implements TextService {
     public void reloadTexts() {
         this.cache.clear();
         this.cache.putAll(getAll());
+    }
+
+    @Override
+    public TextDTO getAdminSearchMasjidText() {
+        return new TextDTO("""
+                *Masjid nomini kiriting:* ⬇️
+                """, true);
+    }
+
+    @Override
+    public TextDTO getEnterUpdatedMasjidName(String masjidName) {
+        return new TextDTO(
+                String.format("""
+                        *Iltimos %s masjidi uchun yangi nomni kiriting:* ⬇️""", masjidName),
+                true);
+    }
+
+    @Override
+    public TextDTO masjidNameSuccessfullyUpdated(String masjidName) {
+        return new TextDTO(
+                String.format("""
+                        *Masjid nomi %s ga muvafaqqiyatli o'zgartirildi\\!*
+                        """, masjidName), true
+        );
+    }
+
+
+    @Override
+    public TextDTO masjidIsVerified(String name) {
+        return new TextDTO(
+                String.format("""
+                        * %s muvafaqqiyatli tasdiqlandi\\!*
+                        """, name), true
+        );
+    }
+
+    @Override
+    public TextDTO updatePrayerTimesSample() {
+        return new TextDTO("""
+                *Iltimos yangilangan jamoat vaqtlarini quyidagi ko'rinishda kirgazing:*
+                \n Bomdod: 04:10
+                \n Peshin: 13:00
+                \n Asr: 17:30
+                \n Shom: 19:55
+                \n Hufton: 21:30
+                """, true);
     }
 
     private TextDTO getCached(String command) {

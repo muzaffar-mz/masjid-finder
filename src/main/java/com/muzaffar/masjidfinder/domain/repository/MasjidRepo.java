@@ -11,6 +11,7 @@ public interface MasjidRepo extends JpaRepository<Masjid, Long> {
 
     List<Masjid> findAllByIdIn(List<Long> ids);
     List<Masjid> findAllByNameContainingIgnoreCase(String name);
+    List<Masjid> findAllByNameContainingIgnoreCaseAndStatus(String name, MasjidStatus status);
     List<Masjid> findAllByStatusIn(List<MasjidStatus> statuses, Pageable pageable);
     Long countAllByStatusIn(List<MasjidStatus> statuses);
 }

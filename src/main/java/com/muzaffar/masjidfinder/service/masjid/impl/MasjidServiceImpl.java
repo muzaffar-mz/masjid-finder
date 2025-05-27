@@ -1,5 +1,7 @@
 package com.muzaffar.masjidfinder.service.masjid.impl;
 
+import com.muzaffar.masjidfinder.ResourceNotFoundException;
+import com.muzaffar.masjidfinder.bot.model.TgUserDTO;
 import com.muzaffar.masjidfinder.domain.entity.Masjid;
 import com.muzaffar.masjidfinder.domain.entity.UserMasjid;
 import com.muzaffar.masjidfinder.domain.entity.enums.MasjidStatus;
@@ -17,10 +19,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.InputMismatchException;
-import java.util.List;
+import java.time.LocalTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -120,6 +120,62 @@ public class MasjidServiceImpl implements MasjidService {
                 .stream()
                 .map(MasjidDTO::new)
                 .toList();
+    }
+
+    @Override
+    public List<MasjidDTO> findUVMasajidByName(String name) {
+        return masjidRepo.findAllByNameContainingIgnoreCaseAndStatus(name, MasjidStatus.DRAFTED)
+                .stream()
+                .map(MasjidDTO::new)
+                .toList();
+    }
+
+    @Override
+    public void updateMasjidName(TgUserDTO user, Long masjidId, String masjidName) {
+        //TODO user is for logging purposes
+        var masjid = masjidRepo.findById(masjidId).orElse(null);
+
+        if (Objects.isNull(masjid)) {
+            // ideally we should not reach this block
+            throw new ResourceNotFoundException(String.format("Masjid with ID %s not found", masjidId));
+        }
+
+        masjid.setName(masjidName);
+        masjidRepo.save(masjid);
+    }
+
+    @Override
+    public MasjidDTO verifyMasjidById(TgUserDTO user, Long masjidId) {
+        //TODO user is for logging purposes
+        var masjid = masjidRepo.findById(masjidId).orElse(null);
+
+        if (Objects.isNull(masjid)) {
+            // ideally we should not reach this block
+            throw new ResourceNotFoundException(String.format("Masjid with ID %s not found", masjidId));
+        }
+
+        masjid.setStatus(MasjidStatus.CONFIRMED);
+        masjidRepo.save(masjid);
+        return new MasjidDTO(masjid);
+    }
+
+    @Override
+    public MasjidDTO updateMasjidPrayerTimes(TgUserDTO userDTO, Long masjidId, LocalTime bomdod, LocalTime peshin, LocalTime asr, LocalTime shom, LocalTime hufton) {
+        //TODO user is for logging purposes
+        var masjid = masjidRepo.findById(masjidId).orElse(null);
+
+        if (Objects.isNull(masjid)) {
+            // ideally we should not reach this block
+            throw new ResourceNotFoundException(String.format("Masjid with ID %s not found", masjidId));
+        }
+
+        masjid.setFajr(bomdod);
+        masjid.setDuhr(peshin);
+        masjid.setAsr(asr);
+        masjid.setMagrib(shom);
+        masjid.setIsha(hufton);
+        masjidRepo.save(masjid);
+        return new MasjidDTO(masjid);
     }
 
     @Override

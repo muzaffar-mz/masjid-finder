@@ -20,8 +20,7 @@ public enum AdminCommand {
     //    COMMUNITY_PRAYER_TIMES("⏰ Jamoat Vaqtlari"),
     //    SHARE_LOCATION("Eng yaqin masjidlarni ko'rish"),
     //    FAVORITES("💚 Mening Masjidlarim"),
-    //    GET_THE_CLOSEST_MASAJID("📍 Eng yaqin masjidlarni ko'rish"),
-    //    BACK("⏮️ Asosiy bo'limga qaytish")
+    //    GET_THE_CLOSEST_MASAJID("📍 Eng yaqin masjidlarni ko'rish")
     //    OTHER("DIFF")
     ;
 

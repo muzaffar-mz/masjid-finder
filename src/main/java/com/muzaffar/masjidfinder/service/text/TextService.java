@@ -21,4 +21,16 @@ public interface TextService {
     TextDTO getYouCanTryAgain();
 
     TextDTO getWelcomeAdminText();
+
+    TextDTO getAdminMainMenu();
+
+    TextDTO getAdminSearchMasjidText();
+
+    TextDTO getEnterUpdatedMasjidName(String masjidName);
+
+    TextDTO masjidNameSuccessfullyUpdated(String masjidName);
+
+    TextDTO masjidIsVerified(String name);
+
+    TextDTO updatePrayerTimesSample();
 }
