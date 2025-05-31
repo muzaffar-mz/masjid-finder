@@ -314,6 +314,12 @@ public class UpdateMapperImpl implements UpdateMapper {
             ignore.printStackTrace();
         }
 
+        if (!adminUpdateHandler.isUserAuthorized(update)) {
+            sendMessage = adminUpdateHandler.unauthorizedUser(update);
+            returnList.add(sendMessage);
+            return returnList;
+        }
+
         //if not recognized
         sendMessage = adminUpdateHandler.notRecognised(update);
         returnList.add(sendMessage);
