@@ -1,6 +1,7 @@
 package com.muzaffar.masjidfinder.domain.entity;
 
 
+import com.muzaffar.masjidfinder.domain.entity.enums.UserMasjidType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,10 +26,10 @@ public class UserMasjid {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "masjid_id")
+    @Column(name = "masjid_id", nullable = false)
     private Long masjidId;
 
     @Column(name = "is_default")
@@ -36,6 +37,10 @@ public class UserMasjid {
 
     @Column(name = "deleted")
     private Boolean deleted = false;
+
+    @Column(name = "type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserMasjidType type;
 
     @CreatedDate
     @Column(name = "date_created", nullable = false, updatable = false)

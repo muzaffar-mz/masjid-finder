@@ -1,5 +1,6 @@
 package com.muzaffar.masjidfinder.service.text;
 
+import com.muzaffar.masjidfinder.domain.entity.Text;
 import com.muzaffar.masjidfinder.service.text.model.TextDTO;
 
 public interface TextService {
@@ -33,4 +34,20 @@ public interface TextService {
     TextDTO masjidIsVerified(String name);
 
     TextDTO updatePrayerTimesSample();
+
+    TextDTO getAdminSendLocationText();
+
+    TextDTO getAdminNearFiveMasajid();
+
+    TextDTO getChoose();
+
+    TextDTO getAdminHasNoAssignedMasjid();
+
+    TextDTO getAdminEnterMasjidIdText();
+
+    TextDTO getInvalidIdText();
+
+    TextDTO getAdminAbout();
+
+    TextDTO unauthorizedUser();
 }

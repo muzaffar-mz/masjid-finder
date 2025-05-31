@@ -7,6 +7,7 @@ import org.springframework.data.util.Pair;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface MasjidService {
     List<MasjidDTO> getMasajidClosestToLocation(LocationDTO dto);
@@ -21,7 +22,7 @@ public interface MasjidService {
 
     List<MasjidDTO> findMasajidByName(String name);
 
-    List<MasjidDTO> findUVMasajidByName(String name);
+    List<MasjidDTO> findMasjidByName(String name, Boolean isUnverified);
 
     MasjidDTO removeMasjidFromFav(Long userId, Long masjidId);
 
@@ -34,4 +35,8 @@ public interface MasjidService {
     MasjidDTO verifyMasjidById(TgUserDTO user, Long masjidId);
 
     MasjidDTO updateMasjidPrayerTimes(TgUserDTO userDTO, Long masjidId, LocalTime bomdod, LocalTime peshin, LocalTime asr, LocalTime shom, LocalTime hufton);
+
+    List<MasjidDTO> getMasajidClosestToLocation(LocationDTO dto, Boolean isUnverified);
+
+    List<MasjidDTO> getAssignedMasjid(TgUserDTO userDTO);
 }

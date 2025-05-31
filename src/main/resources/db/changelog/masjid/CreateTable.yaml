@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-masjid-table
+      author: muzaffar
+      changes:
+        - createTable:
+            tableName: masjid
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar
+              - column:
+                  name: address
+                  type: varchar
+              - column:
+                  name: latitude
+                  type: double
+                  constraints:
+                    nullable: false
+              - column:
+                  name: longitude
+                  type: double
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fajr
+                  type: time
+              - column:
+                  name: duhr
+                  type: time
+              - column:
+                  name: asr
+                  type: time
+              - column:
+                  name: magrib
+                  type: time
+              - column:
+                  name: isha
+                  type: time
+              - column:
+                  name: notes
+                  type: varchar
+              - column:
+                  name: date_created
+                  type: datetime
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_updated
+                  type: datetime
+                  defaultValueComputed: CURRENT_TIMESTAMP

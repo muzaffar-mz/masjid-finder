@@ -16,6 +16,7 @@ public class AdminModesDTO {
     private String chatId;
     private AdminMode adminModes;
     private Long masjidId;
+    private Boolean isUnverified;
 
     //    private Boolean searchMode;
     //    private Integer attempts;

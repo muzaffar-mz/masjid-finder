@@ -6,9 +6,9 @@ import com.muzaffar.masjidfinder.bot.util.AdminKeyboardUtil;
 import com.muzaffar.masjidfinder.bot.util.KeyboardUtil;
 import com.muzaffar.masjidfinder.bot.util.TextUtil;
 import com.muzaffar.masjidfinder.domain.entity.enums.MasjidStatus;
+import com.muzaffar.masjidfinder.model.LocationDTO;
 import com.muzaffar.masjidfinder.service.cache.CacheService;
 import com.muzaffar.masjidfinder.service.masjid.MasjidService;
-import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
 import com.muzaffar.masjidfinder.service.text.TextService;
 import com.muzaffar.masjidfinder.service.text.model.TextDTO;
 import com.muzaffar.masjidfinder.service.user.UserService;
@@ -20,7 +20,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendLocation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,18 +108,18 @@ public class AdminUpdateHandlerImpl implements AdminUpdateHandler {
     }
 
     @Override
-    public SendMessage searchUVMasjidButton(Update update, String command) {
-        cacheService.adminToSearchMode(getChatId(update));
+    public SendMessage searchMasjidButton(Update update, String command, Boolean isUnverified) {
+        cacheService.adminToSearchMode(getChatId(update), isUnverified);
         var textDTO = textService.getAdminSearchMasjidText();
         return sendMessage(getChatId(update), textDTO, AdminKeyboardUtil.backKB());
     }
 
     @Override
-    public List<SendMessage> findUVMasjidByName(Update update, String name) {
-        cacheService.adminToGeneralMode(getChatId(update));
+    public List<SendMessage> findMasjidByName(Update update, String name) {
+        var adminCache = cacheService.getAdminCacheDTO(getChatId(update));
         List<SendMessage> result = new ArrayList<>();
         var chatId = getChatId(update);
-        var masajid = masjidService.findUVMasajidByName(name);
+        var masajid = masjidService.findMasjidByName(name, adminCache.getIsUnverified());
         if (masajid.isEmpty()) {
             var textDTO = textService.getNoMasajidFoundText();
             var sendMessage = sendMessage(chatId, textDTO, AdminKeyboardUtil.backKB());
@@ -146,7 +145,7 @@ public class AdminUpdateHandlerImpl implements AdminUpdateHandler {
     public SendMessage getMasjidUpdateService(Update update) {
         var masjid = masjidService.getMasjid(getMasjidId(update));
         var isVerified = masjid.status() == MasjidStatus.CONFIRMED;
-        return sendMessage(getChatId(update), masjid.getIdAndName(), AdminKeyboardUtil.getInlineMasjidUpdateKeyboard(masjid, isVerified));
+        return sendMessage(getChatId(update), masjid.getUnboldName(), AdminKeyboardUtil.getInlineMasjidUpdateKeyboard(masjid, isVerified));
     }
 
     @Override
@@ -187,7 +186,7 @@ public class AdminUpdateHandlerImpl implements AdminUpdateHandler {
     }
 
     @Override
-    public SendMessage updatePrayerTimes(Update update, String command) {
+    public SendMessage updateMasjidPrayerTimes(Update update, String command) {
         final var chatId = getChatId(update);
         final var user = user(update);
         var masjidId = cacheService.getMasjidIdToUpdate(chatId);
@@ -196,6 +195,109 @@ public class AdminUpdateHandlerImpl implements AdminUpdateHandler {
                 TextUtil.shom(command), TextUtil.hufton(command));
         final var text = new TextDTO(masjid.getNameAndPrayerTimesForBot(), true);
         return sendMessage(chatId, text, AdminKeyboardUtil.backKB());
+    }
+
+    @Override
+    public SendMessage preGetFiveNearMasajid(Update update, String command, Boolean isUnverified) {
+        final var chatId =getChatId(update);
+        cacheService.adminToGetNearMasajidMode(chatId, isUnverified);
+        final var text = textService.getAdminSendLocationText();
+        return sendMessage(chatId, text, AdminKeyboardUtil.getLocationKB());
+    }
+
+    @Override
+    public List<SendMessage> getNearFiveMasajid(Update update) {
+        List<SendMessage> result = new ArrayList<>();
+        String chatId = getChatId(update);
+        var cachedAdmin = cacheService.getAdminCacheDTO(chatId);
+        var mainText = textService.getAdminNearFiveMasajid();
+        var main = sendMessage(chatId, mainText, AdminKeyboardUtil.backKB());
+        result.add(main);
+        final var location = update.getMessage().getLocation();
+        var masajid = masjidService.getMasajidClosestToLocation(new LocationDTO(location.getLatitude(), location.getLongitude()), cachedAdmin.getIsUnverified());
+        masajid.forEach(m -> {
+            var message = sendMessage(chatId, m.getIdAndName(), AdminKeyboardUtil.getInlineUVMasjidKeyboard(m));
+            message.enableMarkdownV2(true);
+            result.add(message);
+        });
+        return result;
+    }
+
+    @Override
+    public SendMessage updateComPrayTime(Update update, String command) {
+        final var text = textService.getChoose();
+        return sendMessage(getChatId(update), text, AdminKeyboardUtil.updateComPrayTimeButtons());
+    }
+
+    @Override
+    public List<SendMessage> getAssignedMasajid(Update update) {
+        List<SendMessage> result = new ArrayList<>();
+        String chatId = getChatId(update);
+        var userDTO = user(update);
+        var masajid = masjidService.getAssignedMasjid(userDTO);
+        if (masajid.isEmpty()) {
+            final var text = textService.getAdminHasNoAssignedMasjid();
+            result.add(sendMessage(chatId, text, AdminKeyboardUtil.backKB()));
+            return result;
+        }
+
+        masajid.forEach(m -> {
+            var message = sendMessage(chatId, m.getIdAndName(), AdminKeyboardUtil.getInlineUVMasjidKeyboard(m));
+            message.enableMarkdownV2(true);
+            result.add(message);
+        });
+
+        return result;
+    }
+
+    @Override
+    public SendMessage preSearchById(Update update, String command) {
+        final var chatId = getChatId(update);
+        cacheService.adminToSearchByIdMode(chatId);
+        final var text = textService.getAdminEnterMasjidIdText();
+        return sendMessage(chatId, text, AdminKeyboardUtil.backKB());
+    }
+
+    @Override
+    public SendMessage getMasjidById(Update update, String command) {
+        String chatId = getChatId(update);
+        var cachedAdmin = cacheService.getAdminCacheDTO(chatId);
+        long masjidId;
+
+        try {
+            masjidId = Long.parseLong(command);
+        } catch (NumberFormatException e) {
+            var text = textService.getInvalidIdText();
+            return sendMessage(chatId, text, AdminKeyboardUtil.backKB());
+        }
+
+        var masjid = masjidService.getMasjid(masjidId);
+        var isVerified = masjid.status() == MasjidStatus.CONFIRMED;
+        return sendMessage(chatId, masjid.getUnboldName(), AdminKeyboardUtil.getInlineMasjidUpdateKeyboard(masjid, isVerified));
+
+    }
+
+    @Override
+    public SendMessage notRecognised(Update update) {
+        var textDTO = textService.unrecognised();
+        return sendMessage(getChatId(update), textDTO, AdminKeyboardUtil.defaultSuperAdminKeyboard());
+    }
+
+    @Override
+    public SendMessage about(Update update, String command) {
+        var textDTO = textService.getAdminAbout();
+        return sendMessage(getChatId(update), textDTO, AdminKeyboardUtil.defaultSuperAdminKeyboard());
+    }
+
+    @Override
+    public boolean isUserAuthorized(Update update) {
+        return userService.isUserAdmin(user(update));
+    }
+
+    @Override
+    public SendMessage unauthorizedUser(Update update) {
+        var text = textService.unauthorizedUser();
+        return sendMessage(getChatId(update), text, AdminKeyboardUtil.shareContactKB());
     }
 
     private static TgUserDTO user(Update update) {

@@ -61,4 +61,8 @@ public record MasjidDTO(
     public String getIdAndName() {
         return "*" + this.id + "\\. " + this.name + "*";
     }
+
+    public String getUnboldName() {
+        return this.id + ". " + this.name;
+    }
 }

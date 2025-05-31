@@ -1,0 +1,68 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-table
+      author: muzaffar
+      changes:
+        - createTable:
+            tableName: user
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar
+                  constraints:
+                    unique: true
+              - column:
+                  name: email
+                  type: varchar
+                  constraints:
+                    unique: true
+              - column:
+                  name: username
+                  type: varchar
+                  constraints:
+                    unique: true
+              - column:
+                  name: firstname
+                  type: varchar
+              - column:
+                  name: lastname
+                  type: varchar
+              - column:
+                  name: status
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_role
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: telegram_id
+                  type: bigint
+              - column:
+                  name: language
+                  type: smallint
+              - column:
+                  name: password
+                  type: varchar
+              - column:
+                  name: notification
+                  type: boolean
+              - column:
+                  name: date_created
+                  type: datetime
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_updated
+                  type: datetime
+                  defaultValueComputed: CURRENT_TIMESTAMP

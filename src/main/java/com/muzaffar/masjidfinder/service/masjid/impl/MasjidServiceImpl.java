@@ -5,8 +5,10 @@ import com.muzaffar.masjidfinder.bot.model.TgUserDTO;
 import com.muzaffar.masjidfinder.domain.entity.Masjid;
 import com.muzaffar.masjidfinder.domain.entity.UserMasjid;
 import com.muzaffar.masjidfinder.domain.entity.enums.MasjidStatus;
+import com.muzaffar.masjidfinder.domain.entity.enums.UserMasjidType;
 import com.muzaffar.masjidfinder.domain.repository.MasjidRepo;
 import com.muzaffar.masjidfinder.domain.repository.UserMasjidRepo;
+import com.muzaffar.masjidfinder.domain.repository.UserRepo;
 import com.muzaffar.masjidfinder.model.LocationDTO;
 import com.muzaffar.masjidfinder.service.masjid.MasjidService;
 import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
@@ -30,6 +32,7 @@ public class MasjidServiceImpl implements MasjidService {
 
     private final MasjidRepo masjidRepo;
     private final UserMasjidRepo userMasjidRepo;
+    private final UserRepo userRepo;
 
 
     private static final double EARTH_RADIUS = 6_371.00;
@@ -96,6 +99,7 @@ public class MasjidServiceImpl implements MasjidService {
         UserMasjid dto = new UserMasjid();
         dto.setMasjidId(masjidId);
         dto.setUserId(userId);
+        dto.setType(UserMasjidType.FAVORITE);
         userMasjidRepo.save(dto);
         return getMasjid(masjidId);
     }
@@ -123,9 +127,10 @@ public class MasjidServiceImpl implements MasjidService {
     }
 
     @Override
-    public List<MasjidDTO> findUVMasajidByName(String name) {
-        return masjidRepo.findAllByNameContainingIgnoreCaseAndStatus(name, MasjidStatus.DRAFTED)
+    public List<MasjidDTO> findMasjidByName(String name, Boolean isUnverified) {
+        return masjidRepo.findAllByNameContainingIgnoreCase(name)
                 .stream()
+                .filter(m -> isUnverified ? Objects.equals(m.getStatus(), MasjidStatus.DRAFTED) : (Objects.equals(m.getStatus(), MasjidStatus.CONFIRMED) || Objects.equals(m.getStatus(), MasjidStatus.DRAFTED)))
                 .map(MasjidDTO::new)
                 .toList();
     }
@@ -198,14 +203,34 @@ public class MasjidServiceImpl implements MasjidService {
         return Pair.of(result, total);
     }
 
-    //    @Override
-//    public List<MasjidDTO> getMasajidClosestToLocation(LocationDTO dto) {
-//        var masjids = masjidRepo.findAll();
-//
-//        var sorted = orderMasjidsByDistanceAscending(masjids, dto);
-//
-//        return sorted.subList(0, Math.min(sorted.size(), 5));
-//    }
+    @Override
+    public List<MasjidDTO> getMasajidClosestToLocation(LocationDTO dto, Boolean isUnverified) {
+        var masjids = masjidRepo.findAll();
+
+        var sorted = orderMasjidsByDistanceAscending(masjids, dto)
+                .stream()
+                .filter(m -> isUnverified ?
+                        m.status() == MasjidStatus.DRAFTED
+                        : (m.status() == MasjidStatus.CONFIRMED) || m.status() == MasjidStatus.DRAFTED)
+                .toList();
+
+        return sorted.subList(0, Math.min(sorted.size(), 5));
+    }
+
+    @Override
+    public List<MasjidDTO> getAssignedMasjid(TgUserDTO userDTO) {
+        var user = userRepo.findByTelegramId(userDTO.telegramId()).orElse(null);
+        if (Objects.isNull(user)) {
+            return List.of();
+        }
+
+        var masjidList = userMasjidRepo.findAllByUserIdAndType(user.getId(), UserMasjidType.ASSIGNED);
+        return masjidRepo.findAllByIdIn(masjidList.stream().map(UserMasjid::getMasjidId).toList())
+                .stream()
+                .map(MasjidDTO::new)
+                .toList();
+    }
+
     private List<MasjidDTO> orderMasjidsByDistanceAscending(List<Masjid> masjids, LocationDTO dto) {
 
         List<MasjidDTO> result = new ArrayList<>();
@@ -237,8 +262,7 @@ public class MasjidServiceImpl implements MasjidService {
         return EARTH_RADIUS * c;
     }
 
-    //    //TODO for testing purposes
-    @PostConstruct
+
     public void init() {
         Masjid masjid1 = getMasjid("Abu Sahiy", 69.16538754002481, 41.248203831616344);
         Masjid masjid2 = getMasjid("Shayx Muhammad Sodiq Muhammad Yusuf", 69.18636274051873, 41.25960654276252);

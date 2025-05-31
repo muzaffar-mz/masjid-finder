@@ -70,12 +70,13 @@ public class CacheServiceImpl implements CacheService {
     }
 
     @Override
-    public void adminToSearchMode(String chatId) {
+    public void adminToSearchMode(String chatId, Boolean isUnverified) {
         adminModes.compute(chatId, (key, cache) -> {
             if (cache == null) {
-                return new AdminModesDTO(key, AdminMode.UV_SEARCH, null);
+                return new AdminModesDTO(key, AdminMode.UV_SEARCH, null, isUnverified);
             }
             cache.setAdminModes(AdminMode.UV_SEARCH);
+            cache.setIsUnverified(isUnverified);
             return cache;
         });
     }
@@ -95,7 +96,7 @@ public class CacheServiceImpl implements CacheService {
     public void adminToUpdateMasjidNameMode(String chatId, Long masjidId) {
         adminModes.compute(chatId, (key, cache) -> {
             if (cache == null) {
-                return new AdminModesDTO(key, AdminMode.MASJID_UPDATE, masjidId);
+                return new AdminModesDTO(key, AdminMode.MASJID_UPDATE, masjidId, null);
             }
             cache.setAdminModes(AdminMode.MASJID_UPDATE);
             cache.setMasjidId(masjidId);
@@ -119,7 +120,7 @@ public class CacheServiceImpl implements CacheService {
     public void adminToUpdatePrayerTimesMode(String chatId, Long masjidId) {
         adminModes.compute(chatId, (key, cache) -> {
             if (cache == null) {
-                return new AdminModesDTO(key, AdminMode.PRAYER_TIME_UPDATE, masjidId);
+                return new AdminModesDTO(key, AdminMode.PRAYER_TIME_UPDATE, masjidId, null);
             }
             cache.setAdminModes(AdminMode.PRAYER_TIME_UPDATE);
             cache.setMasjidId(masjidId);
@@ -131,6 +132,33 @@ public class CacheServiceImpl implements CacheService {
     public boolean isAdminInUpdatePrayerTimesMode(String chatId) {
         var cached = adminModes.get(chatId);
         return Objects.nonNull(cached) && Objects.equals(AdminMode.PRAYER_TIME_UPDATE, cached.getAdminModes());
+    }
+
+    @Override
+    public void adminToGetNearMasajidMode(String chatId, Boolean isUnverified) {
+        adminModes.put(chatId, new AdminModesDTO(chatId, AdminMode.SEND_LOCATION, null, isUnverified));
+    }
+
+    @Override
+    public boolean isAdminToGetNearMasajidMode(String chatId) {
+        var cached = adminModes.get(chatId);
+        return Objects.nonNull(cached) && Objects.equals(AdminMode.SEND_LOCATION, cached.getAdminModes());
+    }
+
+    @Override
+    public AdminModesDTO getAdminCacheDTO(String chatId) {
+        return adminModes.remove(chatId);
+    }
+
+    @Override
+    public void adminToSearchByIdMode(String chatId) {
+        adminModes.put(chatId, new AdminModesDTO(chatId, AdminMode.SEARCH_BY_ID, null, false));
+    }
+
+    @Override
+    public boolean isAdminInSearchByIdMode(String chatId) {
+        var cached = adminModes.get(chatId);
+        return Objects.nonNull(cached) && Objects.equals(AdminMode.SEARCH_BY_ID, cached.getAdminModes());
     }
 
     @PostConstruct

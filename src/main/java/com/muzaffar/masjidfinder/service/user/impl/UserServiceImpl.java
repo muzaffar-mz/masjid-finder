@@ -70,6 +70,12 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserDTO(user);
     }
 
+    @Override
+    public boolean isUserAdmin(TgUserDTO user) {
+        var admin = userRepo.findByTelegramId(user.telegramId()).orElse(null);
+        return Objects.nonNull(admin) && (admin.getRole() == UserRole.SUPER_ADMIN || admin.getRole() == UserRole.ADMIN);
+    }
+
     private User getOrSaveUser(TgUserDTO dto) {
         var user = getUserByTgId(dto.telegramId());
 

@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-meta-data-table
+      author: muzaffar
+      changes:
+        - createTable:
+            tableName: meta_data
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: key
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_created
+                  type: datetime
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_updated
+                  type: datetime
+                  defaultValueComputed: CURRENT_TIMESTAMP

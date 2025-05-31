@@ -3,6 +3,7 @@ package com.muzaffar.masjidfinder.service.masjid;
 import com.muzaffar.masjidfinder.domain.entity.Masjid;
 import com.muzaffar.masjidfinder.domain.repository.MasjidRepo;
 import com.muzaffar.masjidfinder.domain.repository.UserMasjidRepo;
+import com.muzaffar.masjidfinder.domain.repository.UserRepo;
 import com.muzaffar.masjidfinder.model.LocationDTO;
 import com.muzaffar.masjidfinder.service.masjid.impl.MasjidServiceImpl;
 import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
@@ -29,6 +30,8 @@ class MasjidServiceTest {
     private MasjidRepo masjidRepo;
     @Mock
     private UserMasjidRepo userMasjidRepo;
+    @Mock
+    private UserRepo userRepo;
 
     //DUMMY VARIABLES
     private Masjid masjid;
@@ -38,7 +41,7 @@ class MasjidServiceTest {
 
     @BeforeEach
     void setUp() {
-        underTest = new MasjidServiceImpl(masjidRepo, userMasjidRepo);
+        underTest = new MasjidServiceImpl(masjidRepo, userMasjidRepo, userRepo);
         masjids = initsMasjids();
         masjid = initMasjid();
         masjidDTO = initMasjidDTO(masjid);

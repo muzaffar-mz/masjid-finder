@@ -10,21 +10,23 @@ spring:
     username: postgres
     password: postgres
   jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-  debug: true
+  debug: false
 
 server:
   port: 9798
 
 
 telegram:
-  token: 7772684659:AAEo1N2LJrxK8talgCq9V_JyEHs-vUjZM0A
-  username: masjid_finder_dev_bot
+  user:
+    token: 7772684659:AAEo1N2LJrxK8talgCq9V_JyEHs-vUjZM0A
+    username: masjid_finder_dev_bot
   max-attempts: 5
+  admin:
+    token: 7108258643:AAFinJoZaaw7j2J59kUiop1RDGqrOOBB3R8
+    username: prayer_time_test_bot

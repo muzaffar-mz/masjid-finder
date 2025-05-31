@@ -7,5 +7,7 @@ public enum AdminMode {
     MASJID_SEARCH,
     PRAYER_TIME_UPDATE,
     MASJID_UPDATE,
+    SEND_LOCATION,
+    SEARCH_BY_ID,
     ;
 }

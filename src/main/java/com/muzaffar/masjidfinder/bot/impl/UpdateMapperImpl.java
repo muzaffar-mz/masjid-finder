@@ -163,7 +163,11 @@ public class UpdateMapperImpl implements UpdateMapper {
                     return returnList;
                 }
 
-                //TODO DO THE ADMIN SECURITY CHECK
+                if (!adminUpdateHandler.isUserAuthorized(update)) {
+                    sendMessage = adminUpdateHandler.unauthorizedUser(update);
+                    returnList.add(sendMessage);
+                    return returnList;
+                }
 
                 if (Objects.equals(command, AdminCommand.UNVERIFIED_MASAJID.getText())) {
                     sendMessage = adminUpdateHandler.unverifiedMasajidSection(update, command);
@@ -184,26 +188,19 @@ public class UpdateMapperImpl implements UpdateMapper {
                 }
 
                 if (Objects.equals(command, AdminCommand.SEARCH_UV.getText())) {
-                    sendMessage = adminUpdateHandler.searchUVMasjidButton(update, command);
+                    sendMessage = adminUpdateHandler.searchMasjidButton(update, command, true);
                     returnList.add(sendMessage);
                     return returnList;
                 }
 
-//                if (Objects.equals(command, AdminCommand.SEARCH_UV.getText())) {
-//                    sendMessage = updateHandler.searchMasjid(update, command);
-//                    returnList.add(sendMessage);
-//                    return returnList;
-//                }
-
-                //TODO
-                if (Objects.equals(command, AdminCommand.ABOUT.getText())) {
-                    sendMessage = updateHandler.about(update, command);
+                if (Objects.equals(command, AdminCommand.GET_NEAR_5_UV_MASAJID.getText())) {
+                    sendMessage = adminUpdateHandler.preGetFiveNearMasajid(update, command, true);
                     returnList.add(sendMessage);
                     return returnList;
                 }
 
                 if (cacheService.isAdminInSearchMode(getChatId(update))) {
-                    var result = adminUpdateHandler.findUVMasjidByName(update, command);
+                    var result = adminUpdateHandler.findMasjidByName(update, command);
                     returnList.addAll(result);
                     return returnList;
                 }
@@ -215,16 +212,74 @@ public class UpdateMapperImpl implements UpdateMapper {
                 }
 
                 if (cacheService.isAdminInUpdatePrayerTimesMode(getChatId(update))) {
-                    sendMessage = adminUpdateHandler.updatePrayerTimes(update, command);
+                    sendMessage = adminUpdateHandler.updateMasjidPrayerTimes(update, command);
                     returnList.add(sendMessage);
                     return returnList;
                 }
+
+                if (cacheService.isAdminInSearchByIdMode(getChatId(update))) {
+                    sendMessage = adminUpdateHandler.getMasjidById(update, command);
+                    returnList.add(sendMessage);
+                    return returnList;
+                }
+
+                if (Objects.equals(command, AdminCommand.UPDATE_COM_PRAY_TIME.getText())) {
+                    sendMessage = adminUpdateHandler.updateComPrayTime(update, command);
+                    returnList.add(sendMessage);
+                    return returnList;
+                }
+
+                if (Objects.equals(command, AdminCommand.GET_ASSIGNED_MASJID.getText())) {
+                    var result = adminUpdateHandler.getAssignedMasajid(update);
+                    returnList.addAll(result);
+                    return returnList;
+                }
+
+                if (Objects.equals(command, AdminCommand.SEARCH.getText())) {
+                    sendMessage = adminUpdateHandler.searchMasjidButton(update, command, false);
+                    returnList.add(sendMessage);
+                    return returnList;
+                }
+
+                if (Objects.equals(command, AdminCommand.SEARCH_BY_ID.getText())) {
+                    sendMessage = adminUpdateHandler.preSearchById(update, command);
+                    returnList.add(sendMessage);
+                    return returnList;
+                }
+
+                if (Objects.equals(command, AdminCommand.GET_NEAR_5_MASAJID.getText())) {
+                    sendMessage = adminUpdateHandler.preGetFiveNearMasajid(update, command, false);
+                    returnList.add(sendMessage);
+                    return returnList;
+                }
+
+
+                if (hasLocation(update)) {
+                    if (cacheService.isAdminToGetNearMasajidMode(getChatId(update))) {
+                        var result = adminUpdateHandler.getNearFiveMasajid(update);
+                        returnList.addAll(result);
+                        return returnList;
+                    }
+                }
+
+                if (Objects.equals(command, AdminCommand.ABOUT.getText())) {
+                    sendMessage = adminUpdateHandler.about(update, command);
+                    returnList.add(sendMessage);
+                    return returnList;
+                }
+            }
+
+            if (!adminUpdateHandler.isUserAuthorized(update)) {
+                sendMessage = adminUpdateHandler.unauthorizedUser(update);
+                returnList.add(sendMessage);
+                return returnList;
             }
 
             if (isCallbackQuery(update)) {
                 //TODO DO THE ADMIN SECURITY CHECK
                 final String newCommand = callbackCommand(update) != null ? callbackCommand(update) : "";
 
+                //TODO rename UV_MASJID make it more universal
                 if (Objects.equals(newCommand, AdminCallbackCommand.UV_MASJID.getText())) {
                     sendMessage = adminUpdateHandler.getMasjidUpdateService(update);
                     returnList.add(sendMessage);
@@ -249,45 +304,18 @@ public class UpdateMapperImpl implements UpdateMapper {
                     return returnList;
                 }
 
-
-                //TODO three services
-                // update name
-                // update prayer time
-                // update status
-
-                //TODO remove below
-
-                if (Objects.equals(newCommand, CallbackCommand.SELECTED_MJ_LOCATION.getText())) {
-//                    var sendLocation = updateHandler.sendMasjidLocation(update);
-                    var sendLocation = adminUpdateHandler.sendMasjidLocation(update);
-                    returnList.addAll(sendLocation);
-                    return returnList;
-                }
-
-                if (Objects.equals(newCommand, CallbackCommand.SET_MJ_AS_FAV.getText())) {
-                    sendMessage = updateHandler.setMasjidAsFav(update, newCommand);
+                if (Objects.equals(newCommand, AdminCallbackCommand.BACK.getText())) {
+                    sendMessage = adminUpdateHandler.mainMenu(update, newCommand);
                     returnList.add(sendMessage);
                     return returnList;
                 }
-
-                if (Objects.equals(newCommand, CallbackCommand.REMOVE_FROM_MJ_AS_FAV.getText())) {
-                    sendMessage = updateHandler.removeMasjidFromFav(update, newCommand);
-                    returnList.add(sendMessage);
-                    return returnList;
-                }
-
-
             }
-
-
-
         } catch (Exception ignore) {
             ignore.printStackTrace();
         }
 
-        //TODO DO THE ADMIN SECURITY CHECK
         //if not recognized
-        sendMessage = updateHandler.notRecognised(update);
+        sendMessage = adminUpdateHandler.notRecognised(update);
         returnList.add(sendMessage);
         return returnList;
     }

@@ -19,9 +19,9 @@ public interface AdminUpdateHandler {
 
     SendMessage mainMenu(Update update, String command);
 
-    SendMessage searchUVMasjidButton(Update update, String command);
+    SendMessage searchMasjidButton(Update update, String command, Boolean isUnverified);
 
-    List<SendMessage> findUVMasjidByName(Update update, String command);
+    List<SendMessage> findMasjidByName(Update update, String command);
 
     SendMessage getMasjidUpdateService(Update update);
 
@@ -33,5 +33,25 @@ public interface AdminUpdateHandler {
 
     SendMessage preUpdatePrayerTimes(Update update);
 
-    SendMessage updatePrayerTimes(Update update, String command);
+    SendMessage updateMasjidPrayerTimes(Update update, String command);
+
+    SendMessage preGetFiveNearMasajid(Update update, String command, Boolean isUnverified);
+
+    List<SendMessage> getNearFiveMasajid(Update update);
+
+    SendMessage updateComPrayTime(Update update, String command);
+
+    List<SendMessage> getAssignedMasajid(Update update);
+
+    SendMessage preSearchById(Update update, String command);
+
+    SendMessage getMasjidById(Update update, String command);
+
+    SendMessage notRecognised(Update update);
+
+    SendMessage about(Update update, String command);
+
+    boolean isUserAuthorized(Update update);
+
+    SendMessage unauthorizedUser(Update update);
 }

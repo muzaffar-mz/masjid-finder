@@ -5,6 +5,7 @@ import com.muzaffar.masjidfinder.bot.model.TgUserDTO;
 import com.muzaffar.masjidfinder.domain.entity.User;
 import com.muzaffar.masjidfinder.domain.entity.enums.UserRole;
 import com.muzaffar.masjidfinder.domain.entity.enums.UserStatus;
+import com.muzaffar.masjidfinder.domain.repository.MetaDataRepo;
 import com.muzaffar.masjidfinder.domain.repository.UserRepo;
 import com.muzaffar.masjidfinder.service.masjid.MasjidService;
 import com.muzaffar.masjidfinder.service.user.impl.UserServiceImpl;
@@ -33,6 +34,8 @@ class UserServiceTest {
     private UserMapper userMapper;
     @Mock
     private MasjidService masjidService;
+    @Mock
+    private MetaDataRepo metaDataRepo;
 
     //DUMMY Variables
     private TgUserDTO tgUser;
@@ -41,7 +44,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        underTest = new UserServiceImpl(userRepo, userMapper, masjidService);
+        underTest = new UserServiceImpl(userRepo, userMapper, masjidService, metaDataRepo);
         this.tgUser = new TgUserDTO(15L, "@user_name", "First_Name", "Last_Name");
 
         this.user = new User();

@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class AdminKeyboardUtil {
 
@@ -36,6 +37,19 @@ public class AdminKeyboardUtil {
                         button.andThen(buttonRow).apply(AdminCommand.ABOUT)
                 )
         );
+    }
+
+    public static ReplyKeyboardMarkup updateComPrayTimeButtons() {
+        return replyKeyboardMultiRow.apply(
+                List.of(
+                        button.andThen(buttonRow).apply(AdminCommand.GET_ASSIGNED_MASJID),
+                        button.andThen(buttonRow).apply(AdminCommand.SEARCH),
+                        button.andThen(buttonRow).apply(AdminCommand.SEARCH_BY_ID),
+                        button.andThen(buttonRow).apply(AdminCommand.GET_NEAR_5_MASAJID),
+                        button.andThen(buttonRow).apply(AdminCommand.BACK)
+                )
+        );
+
     }
 
     public static InlineKeyboardMarkup getInlineUVMasjidKeyboard(MasjidDTO masjid) {
@@ -64,6 +78,12 @@ public class AdminKeyboardUtil {
                     .callbackData(AdminCallbackCommand.UPDATE_MASJID_PRAYER_TIME.getText() + "_" + masjid.id())
                     .build();
 
+    static Supplier<InlineKeyboardButton> ILKBackButton = () ->
+            InlineKeyboardButton.builder()
+            .text(AdminCallbackCommand.BACK.getFullText())
+            .callbackData(AdminCallbackCommand.BACK.getText() + "_")
+            .build();
+
     static Function<MasjidDTO, InlineKeyboardButton> masjidILKVerifyMasjidButon = masjid ->
             InlineKeyboardButton.builder()
                     .text(AdminCallbackCommand.VERIFY_MASJID.getFullText())
@@ -72,7 +92,7 @@ public class AdminKeyboardUtil {
 
     static Function<MasjidDTO, InlineKeyboardButton> masjidInlineKeyboardButton =
             masjid -> InlineKeyboardButton.builder()
-                    .text(masjid.name())
+                    .text(AdminCallbackCommand.UV_MASJID.getFullText())
                     .callbackData(AdminCallbackCommand.UV_MASJID.getText() + "_" + masjid.id())
                     .build();
 
@@ -99,13 +119,14 @@ public class AdminKeyboardUtil {
         res.add(new InlineKeyboardRow(masjidILKUpdateNameButton.apply(masjid)));
         res.add(new InlineKeyboardRow(masjidILKUpdatePrayerTimes.apply(masjid)));
         if (!isVerified) res.add(new InlineKeyboardRow(masjidILKVerifyMasjidButon.apply(masjid)));
+        res.add(new InlineKeyboardRow(ILKBackButton.get()));
         return res;
     };
 
     public static ReplyKeyboardMarkup getLocationKB() {
         return replyKeyboardMultiRow.apply(
                 List.of(
-                        locationButton.andThen(buttonRow).apply(AdminCommand.UNVERIFIED_MASAJID),
+                        locationButton.andThen(buttonRow).apply(AdminCommand.LOCATION),
                         button.andThen(buttonRow).apply(AdminCommand.BACK)
                 )
         );

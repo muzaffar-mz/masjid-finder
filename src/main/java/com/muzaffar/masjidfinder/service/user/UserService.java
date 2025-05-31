@@ -9,4 +9,6 @@ public interface UserService {
     UserDTO getUser(TgUserDTO user);
 
     UserDTO getOrRegisterSuperAdmin(TgUserDTO tgUser, String phoneNumber);
+
+    boolean isUserAdmin(TgUserDTO user);
 }

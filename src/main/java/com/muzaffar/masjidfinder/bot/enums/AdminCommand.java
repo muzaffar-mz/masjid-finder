@@ -15,6 +15,10 @@ public enum AdminCommand {
     TOTAL_UV_LIST("Barcha tasdiqlanmagan masjidlar ro'yxati"),
     SEARCH_UV("Tasdiqlanmagan masjidni qidirish"),
     GET_NEAR_5_UV_MASAJID("Tasdiqlanmagan eng yaqin masjidlar ro'yxati"),
+    LOCATION("\uD83D\uDCCD Joylashuvni yuborish"),
+    GET_ASSIGNED_MASJID("Biriktirilgan masjidni ko'rsatish"),
+    SEARCH_BY_ID("🔍 Masjid ID-si bilan qidirish"),
+    GET_NEAR_5_MASAJID("Eng yaqin masjidlarni ko'rstish"),
 
     //    PRAYER_TIMES("🕐 Namoz Vaqtlari"),
     //    COMMUNITY_PRAYER_TIMES("⏰ Jamoat Vaqtlari"),
