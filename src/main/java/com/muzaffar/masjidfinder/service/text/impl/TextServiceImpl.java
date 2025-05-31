@@ -1,7 +1,9 @@
 package com.muzaffar.masjidfinder.service.text.impl;
 
+import com.muzaffar.masjidfinder.bot.enums.AdminCommand;
 import com.muzaffar.masjidfinder.bot.enums.CallbackCommand;
 import com.muzaffar.masjidfinder.bot.enums.Command;
+import com.muzaffar.masjidfinder.domain.entity.Text;
 import com.muzaffar.masjidfinder.domain.repository.TextRepo;
 import com.muzaffar.masjidfinder.service.text.TextService;
 import com.muzaffar.masjidfinder.service.text.model.TextDTO;
@@ -60,6 +62,49 @@ public class TextServiceImpl implements TextService {
     }
 
     @Override
+    public TextDTO getAdminText(String command) {
+        if (command.equals(AdminCommand.START.getText())) {
+            return new TextDTO("""
+                    *Assalomu alaykum\\!* \
+                   
+                    🌙 *Masjid Sari 🕌 🚶🏽‍♂️Adminlar uchun botimizga xush kelibsiz\\!*\
+                   ️
+                    *Botimizdan foydalanish uchun ro'yxatdan o'ting:*⏬""", true);
+        }
+
+
+        if (command.equals(AdminCommand.UNVERIFIED_MASAJID.getText())) {
+            return new TextDTO("""
+                    *Kerakli tugmani bosing*
+                    """, true);
+        }
+
+        if (command.equals("location")) {
+            return new TextDTO("""
+                    Tasdiqlanmangan eng yaqin masjidlar ro'yxati: ⬇️
+                    """, false);
+        }
+
+        return null;
+    }
+
+    @Override
+    public TextDTO getWelcomeAdminText() {
+        return new TextDTO("""
+                🌙 *Hurmatli Admin️ 👨🏽‍💻 \\!*\
+                \n *Siz botimizdan muvaffaqiyatli ro'yxatdan o'tdingiz\\!*\
+                \n *Botimizdan foydalanish uchun o'zingizga kerakli tugmani bosing:*⏬
+                """, true);
+    }
+
+    @Override
+    public TextDTO getAdminMainMenu() {
+        return new TextDTO("""
+                *Botimizdan foydalanish uchun o'zingizga kerakli tugmani bosing:*⏬
+                """, true);
+    }
+
+    @Override
     public TextDTO getText(String command, Boolean isAllowed) {
         //TODO
         // TEMPORARY SOLUTION
@@ -95,6 +140,111 @@ public class TextServiceImpl implements TextService {
         this.cache.putAll(getAll());
     }
 
+    @Override
+    public TextDTO getAdminSearchMasjidText() {
+        return new TextDTO("""
+                *Masjid nomini kiriting:* ⬇️
+                """, true);
+    }
+
+    @Override
+    public TextDTO getEnterUpdatedMasjidName(String masjidName) {
+        return new TextDTO(
+                String.format("""
+                        *Iltimos %s masjidi uchun yangi nomni kiriting:* ⬇️""", masjidName),
+                true);
+    }
+
+    @Override
+    public TextDTO masjidNameSuccessfullyUpdated(String masjidName) {
+        return new TextDTO(
+                String.format("""
+                        *Masjid nomi %s ga muvafaqqiyatli o'zgartirildi\\!*
+                        """, masjidName), true
+        );
+    }
+
+
+    @Override
+    public TextDTO masjidIsVerified(String name) {
+        return new TextDTO(
+                String.format("""
+                         %s *muvafaqqiyatli tasdiqlandi\\!*
+                        """, name), true
+        );
+    }
+
+    @Override
+    public TextDTO updatePrayerTimesSample() {
+        return new TextDTO("""
+                *Iltimos yangilangan jamoat vaqtlarini quyidagi ko'rinishda kirgazing:*
+                Bomdod: 04:10
+                Peshin: 13:00
+                Asr: 17:30
+                Shom: 19:55
+                Hufton: 21:30
+                """, true);
+    }
+
+    @Override
+    public TextDTO getAdminSendLocationText() {
+        return new TextDTO("""
+                *Iltimos o'z joylashuvingizni yuboring:* ⬇️
+                """, true);
+    }
+
+    @Override
+    public TextDTO getAdminNearFiveMasajid() {
+        return new TextDTO("""
+                *Sizning joylashuvingizga eng yaqin masjidlar:* ⏬
+                """, true);
+    }
+
+    @Override
+    public TextDTO getChoose() {
+        return new TextDTO("""
+                    *Kerakli tugmani bosing*
+                    """, true);
+    }
+
+    @Override
+    public TextDTO getAdminHasNoAssignedMasjid() {
+        return new TextDTO("""
+                *Sizga masjid biriktirilmagan*
+                """, true);
+    }
+
+    @Override
+    public TextDTO getAdminEnterMasjidIdText() {
+        return new TextDTO("""
+                *Iltimos masjid ID raqamini kiriting:* ⏬
+                """, true);
+    }
+
+    @Override
+    public TextDTO getInvalidIdText() {
+        return new TextDTO("""
+                *Notog'ri ID raqam kiritdingiz. Qaytadan urinib ko'ring*
+                """, true);
+    }
+
+    @Override
+    public TextDTO getAdminAbout() {
+        return new TextDTO("""
+                    *Admin botning maqsadi \\- foydalanuvchilar uchun masjidlarni, ulardagi namoz vaqtlarini yangilab turishga ko’mak berish\\!*\
+                     
+                     \n*Ishlab chiquvchisi \\- “Toshkent Inc”
+                      \nBog’lanish uchun \\- https:\\/\\/t\\.me\\/BotOpsAdmin*
+                    """, true);
+    }
+
+    @Override
+    public TextDTO unauthorizedUser() {
+        return new TextDTO("""
+                *Tehnik xatolik\\. Iltimos adminlar bilan bog'laning*
+                """, true);
+    }
+
     private TextDTO getCached(String command) {
 
         if (true) {
@@ -105,7 +255,7 @@ public class TextServiceImpl implements TextService {
         var textDTO = this.cache.get(command);
 
         if (Objects.isNull(textDTO) || textDTO.expiry().isBefore(LocalDateTime.now())) {
-            var textOptional = textRepo.findByCommandButton(Command.valueOf(command));
+            var textOptional = textRepo.findByCommandButton(command);
 
             if (textOptional.isEmpty()) {
                 return unrecognised();
@@ -194,7 +344,7 @@ public class TextServiceImpl implements TextService {
         return textRepo.findAll()
                 .stream()
                 .collect(Collectors.toMap(
-                        text -> text.getCommandButton().getText(),
+                        Text::getCommandButton,
                         TextDTO::new,
                         (existing, replacement) -> existing,
                         HashMap::new

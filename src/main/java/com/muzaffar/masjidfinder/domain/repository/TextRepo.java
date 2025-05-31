@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface TextRepo extends JpaRepository<Text, Long> {
-    Optional<Text> findByCommandButton(Command command);
+    Optional<Text> findByCommandButton(String command);
 }

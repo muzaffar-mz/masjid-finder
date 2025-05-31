@@ -1,21 +1,29 @@
 package com.muzaffar.masjidfinder.service.masjid.impl;
 
+import com.muzaffar.masjidfinder.ResourceNotFoundException;
+import com.muzaffar.masjidfinder.bot.model.TgUserDTO;
 import com.muzaffar.masjidfinder.domain.entity.Masjid;
 import com.muzaffar.masjidfinder.domain.entity.UserMasjid;
+import com.muzaffar.masjidfinder.domain.entity.enums.MasjidStatus;
+import com.muzaffar.masjidfinder.domain.entity.enums.UserMasjidType;
 import com.muzaffar.masjidfinder.domain.repository.MasjidRepo;
 import com.muzaffar.masjidfinder.domain.repository.UserMasjidRepo;
+import com.muzaffar.masjidfinder.domain.repository.UserRepo;
 import com.muzaffar.masjidfinder.model.LocationDTO;
 import com.muzaffar.masjidfinder.service.masjid.MasjidService;
 import com.muzaffar.masjidfinder.service.masjid.model.MasjidDTO;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.InputMismatchException;
-import java.util.List;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,6 +32,7 @@ public class MasjidServiceImpl implements MasjidService {
 
     private final MasjidRepo masjidRepo;
     private final UserMasjidRepo userMasjidRepo;
+    private final UserRepo userRepo;
 
 
     private static final double EARTH_RADIUS = 6_371.00;
@@ -90,6 +99,7 @@ public class MasjidServiceImpl implements MasjidService {
         UserMasjid dto = new UserMasjid();
         dto.setMasjidId(masjidId);
         dto.setUserId(userId);
+        dto.setType(UserMasjidType.FAVORITE);
         userMasjidRepo.save(dto);
         return getMasjid(masjidId);
     }
@@ -111,6 +121,111 @@ public class MasjidServiceImpl implements MasjidService {
     @Override
     public List<MasjidDTO> findMasajidByName(String name) {
         return masjidRepo.findAllByNameContainingIgnoreCase(name)
+                .stream()
+                .map(MasjidDTO::new)
+                .toList();
+    }
+
+    @Override
+    public List<MasjidDTO> findMasjidByName(String name, Boolean isUnverified) {
+        return masjidRepo.findAllByNameContainingIgnoreCase(name)
+                .stream()
+                .filter(m -> isUnverified ? Objects.equals(m.getStatus(), MasjidStatus.DRAFTED) : (Objects.equals(m.getStatus(), MasjidStatus.CONFIRMED) || Objects.equals(m.getStatus(), MasjidStatus.DRAFTED)))
+                .map(MasjidDTO::new)
+                .toList();
+    }
+
+    @Override
+    public void updateMasjidName(TgUserDTO user, Long masjidId, String masjidName) {
+        //TODO user is for logging purposes
+        var masjid = masjidRepo.findById(masjidId).orElse(null);
+
+        if (Objects.isNull(masjid)) {
+            // ideally we should not reach this block
+            throw new ResourceNotFoundException(String.format("Masjid with ID %s not found", masjidId));
+        }
+
+        masjid.setName(masjidName);
+        masjidRepo.save(masjid);
+    }
+
+    @Override
+    public MasjidDTO verifyMasjidById(TgUserDTO user, Long masjidId) {
+        //TODO user is for logging purposes
+        var masjid = masjidRepo.findById(masjidId).orElse(null);
+
+        if (Objects.isNull(masjid)) {
+            // ideally we should not reach this block
+            throw new ResourceNotFoundException(String.format("Masjid with ID %s not found", masjidId));
+        }
+
+        masjid.setStatus(MasjidStatus.CONFIRMED);
+        masjidRepo.save(masjid);
+        return new MasjidDTO(masjid);
+    }
+
+    @Override
+    public MasjidDTO updateMasjidPrayerTimes(TgUserDTO userDTO, Long masjidId, LocalTime bomdod, LocalTime peshin, LocalTime asr, LocalTime shom, LocalTime hufton) {
+        //TODO user is for logging purposes
+        var masjid = masjidRepo.findById(masjidId).orElse(null);
+
+        if (Objects.isNull(masjid)) {
+            // ideally we should not reach this block
+            throw new ResourceNotFoundException(String.format("Masjid with ID %s not found", masjidId));
+        }
+
+        masjid.setFajr(bomdod);
+        masjid.setDuhr(peshin);
+        masjid.setAsr(asr);
+        masjid.setMagrib(shom);
+        masjid.setIsha(hufton);
+        masjidRepo.save(masjid);
+        return new MasjidDTO(masjid);
+    }
+
+    @Override
+    public List<MasjidDTO> getUnverifiedMasajidClosestToLocation(LocationDTO locationDTO) {
+        return List.of();
+//        var masajid = masjidRepo.findAllByStatusIn(List.of(MasjidStatus.DRAFTED, MasjidStatus.DISABLED));
+//        var sorted = orderMasjidsByDistanceAscending(masajid, locationDTO);
+//        return sorted.subList(0, Math.min(sorted.size(), 10));
+    }
+
+    @Override
+    public Pair<List<MasjidDTO>, Long> getFirst15UnverifiedMasajid() {
+        Sort sort = Sort.by("id").ascending();
+        Pageable pageable = PageRequest.of(0, 15, sort);
+        List<MasjidStatus> statuses = List.of(MasjidStatus.DRAFTED, MasjidStatus.DISABLED);
+        var masajid = masjidRepo.findAllByStatusIn(statuses, pageable);
+
+        List<MasjidDTO> result = masajid.stream().map(MasjidDTO::new).collect(Collectors.toList());
+        Long total = masjidRepo.countAllByStatusIn(statuses);
+        return Pair.of(result, total);
+    }
+
+    @Override
+    public List<MasjidDTO> getMasajidClosestToLocation(LocationDTO dto, Boolean isUnverified) {
+        var masjids = masjidRepo.findAll();
+
+        var sorted = orderMasjidsByDistanceAscending(masjids, dto)
+                .stream()
+                .filter(m -> isUnverified ?
+                        m.status() == MasjidStatus.DRAFTED
+                        : (m.status() == MasjidStatus.CONFIRMED) || m.status() == MasjidStatus.DRAFTED)
+                .toList();
+
+        return sorted.subList(0, Math.min(sorted.size(), 5));
+    }
+
+    @Override
+    public List<MasjidDTO> getAssignedMasjid(TgUserDTO userDTO) {
+        var user = userRepo.findByTelegramId(userDTO.telegramId()).orElse(null);
+        if (Objects.isNull(user)) {
+            return List.of();
+        }
+
+        var masjidList = userMasjidRepo.findAllByUserIdAndType(user.getId(), UserMasjidType.ASSIGNED);
+        return masjidRepo.findAllByIdIn(masjidList.stream().map(UserMasjid::getMasjidId).toList())
                 .stream()
                 .map(MasjidDTO::new)
                 .toList();
@@ -147,8 +262,7 @@ public class MasjidServiceImpl implements MasjidService {
         return EARTH_RADIUS * c;
     }
 
-    //    //TODO for testing purposes
-    @PostConstruct
+
     public void init() {
         Masjid masjid1 = getMasjid("Abu Sahiy", 69.16538754002481, 41.248203831616344);
         Masjid masjid2 = getMasjid("Shayx Muhammad Sodiq Muhammad Yusuf", 69.18636274051873, 41.25960654276252);
@@ -195,6 +309,7 @@ public class MasjidServiceImpl implements MasjidService {
         masjid.setName(name);
         masjid.setLongitude(ln);
         masjid.setLatitude(lat);
+        masjid.setStatus(MasjidStatus.DRAFTED);
         return masjid;
 
     }

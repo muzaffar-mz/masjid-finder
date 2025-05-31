@@ -1,6 +1,5 @@
 package com.muzaffar.masjidfinder.domain.entity;
 
-import com.muzaffar.masjidfinder.domain.entity.enums.MasjidNamesGroup;
 import com.muzaffar.masjidfinder.domain.entity.enums.MasjidStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,17 +22,13 @@ public class Masjid extends BaseEntity {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "name_group")
-    @Enumerated(EnumType.ORDINAL)
-    private MasjidNamesGroup namesGroup;
-
     @Column(name = "latitude", nullable = false)
     private Double latitude;
 
     @Column(name = "longitude", nullable = false)
     private Double longitude;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private MasjidStatus status;
 

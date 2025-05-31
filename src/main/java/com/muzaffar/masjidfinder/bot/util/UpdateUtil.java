@@ -6,6 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
+import java.util.function.Predicate;
+
 public class UpdateUtil {
 
     public static SendMessage sendMessage(String chatId, TextDTO text, ReplyKeyboardMarkup keyboard) {
@@ -44,6 +46,8 @@ public class UpdateUtil {
     public static boolean isCallbackQuery(Update update) {
         return update.hasCallbackQuery();
     }
+
+    static Predicate<Update> isCallbackQueryFun = Update::hasCallbackQuery;
 
     public static String getChatId(Update update) {
         return update.hasMessage()

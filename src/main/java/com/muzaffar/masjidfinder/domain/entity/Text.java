@@ -23,11 +23,10 @@ public class Text extends BaseEntity {
     @Enumerated(EnumType.ORDINAL)
     private InterfaceLanguage language;
 
-    @Column(name = "command_button")
-    @Enumerated(EnumType.ORDINAL)
-    private Command commandButton;
+    @Column(name = "command_button", nullable = false)
+    private String commandButton;
 
-    @Column(name = "is_formatted")
+    @Column(name = "is_formatted", nullable = false)
     private Boolean isFormatted;
 
 }

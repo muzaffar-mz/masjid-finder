@@ -26,13 +26,13 @@ import static com.muzaffar.masjidfinder.bot.util.UpdateUtil.isCallbackQuery;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class Telegram implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
+public class TelegramAdmin implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
 
-    private final TelegramClient telegramClient;
+    private final TelegramClient telegramAdminClient;
     private final UpdateMapper updateMapper;
     private final CacheService cacheService;
 
-    @Value("${telegram.user.token}")
+    @Value("${telegram.admin.token}")
     private String token;
 
     @Override
@@ -57,7 +57,7 @@ public class Telegram implements SpringLongPollingBot, LongPollingSingleThreadUp
     private void handle(Update update) throws TelegramApiException {
 
         //1. handles update
-        final var sendMessages = updateMapper.map(update);
+        final var sendMessages = updateMapper.adminMap(update);
 
         //2. deletes all previous messages
         var chatId = ((SendMessage) sendMessages.getFirst()).getChatId();
@@ -75,7 +75,7 @@ public class Telegram implements SpringLongPollingBot, LongPollingSingleThreadUp
         }
 
         try {
-            telegramClient.execute(new DeleteMessage(chatId, update.getMessage().getMessageId()));
+            telegramAdminClient.execute(new DeleteMessage(chatId, update.getMessage().getMessageId()));
         } catch (TelegramApiException e) {
             log.error("Error while deleting sent update. Chat ID: {}, message: {}, exception: {}",
                     chatId, update.getMessage().getMessageId(), e.toString());
@@ -90,7 +90,7 @@ public class Telegram implements SpringLongPollingBot, LongPollingSingleThreadUp
         //send message
         sendMessages.forEach(method -> {
             try {
-                var repl = telegramClient.execute((BotApiMethod<?>) method);
+                var repl = telegramAdminClient.execute((BotApiMethod<?>) method);
                 if (repl instanceof Message message) {
                     sentMessagesId.add(message.getMessageId());
                 }
@@ -113,7 +113,7 @@ public class Telegram implements SpringLongPollingBot, LongPollingSingleThreadUp
 
         messages.forEach(i -> {
             try {
-                telegramClient.execute(new DeleteMessage(chatId, i));
+                telegramAdminClient.execute(new DeleteMessage(chatId, i));
             } catch (TelegramApiException e) {
                 log.error("Error while deleting the message. Chat ID: {}, message id: {}, exception: {}",
                         chatId, i, e.toString());

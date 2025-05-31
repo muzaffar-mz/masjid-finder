@@ -1,7 +1,6 @@
 package com.muzaffar.masjidfinder.config;
 
 
-import com.muzaffar.masjidfinder.bot.UpdateMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,12 +16,20 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 @RequiredArgsConstructor
 public class TelegramConfig {
 
-    @Value("${telegram.token}")
-    private String token;
+    @Value("${telegram.user.token}")
+    private String tokenUser;
+
+    @Value("${telegram.admin.token}")
+    private String tokenAdmin;
 
     @Bean
     public TelegramClient telegramClient() {
-        return new OkHttpTelegramClient(token);
+        return new OkHttpTelegramClient(tokenUser);
+    }
+
+    @Bean
+    public TelegramClient telegramAdminClient() {
+        return new OkHttpTelegramClient(tokenAdmin);
     }
 
 }

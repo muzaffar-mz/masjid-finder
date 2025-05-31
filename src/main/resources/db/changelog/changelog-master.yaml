@@ -1,2 +1,13 @@
 databaseChangeLog:
-  - 
+  - include:
+      file: /db/changelog/masjid/CreateTable.yaml
+  - include:
+      file: /db/changelog/metaData/CreateTable.yaml
+  - include:
+      file: /db/changelog/text/CreateTable.yaml
+  - include:
+      file: /db/changelog/user/CreateTable.yaml
+  - include:
+      file: /db/changelog/userMasjid/CreateTable.yaml
+  - include:
+      file: /db/changelog/masjid/InsertMasajid.yaml

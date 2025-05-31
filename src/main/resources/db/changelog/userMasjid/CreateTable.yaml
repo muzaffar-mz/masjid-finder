@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-masjid-table
+      author: muzaffar
+      changes:
+        - createTable:
+            tableName: user_masjid
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_user_id
+                    references: user(id)
+              - column:
+                  name: masjid_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_masjid_id
+                    references: masjid(id)
+              - column:
+                  name: type
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_default
+                  type: boolean
+              - column:
+                  name: deleted
+                  type: boolean
+              - column:
+                  name: date_created
+                  type: datetime
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
