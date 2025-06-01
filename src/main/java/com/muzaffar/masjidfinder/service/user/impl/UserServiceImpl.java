@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getOrRegisterSuperAdmin(TgUserDTO tgUser, String phoneNumber) {
-
+        log.info("Get or Register Super Admin --> TG user: {}, phoneNumber: {}", tgUser, phoneNumber);
         if (phoneNumber.startsWith("+")) {
             phoneNumber = phoneNumber.replace("+", "");
         }
