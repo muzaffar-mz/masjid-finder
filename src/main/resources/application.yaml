@@ -24,9 +24,9 @@ server:
 
 telegram:
   user:
-    token: 7772684659:AAEo1N2LJrxK8talgCq9V_JyEHs-vUjZM0A
+    token: ${TELEGRAM_USER_TOKEN:}
     username: masjid_finder_dev_bot
   max-attempts: 5
   admin:
-    token: 7108258643:AAFinJoZaaw7j2J59kUiop1RDGqrOOBB3R8
+    token: ${TELEGRAM_ADMIN_TOKEN:}
     username: prayer_time_test_bot
