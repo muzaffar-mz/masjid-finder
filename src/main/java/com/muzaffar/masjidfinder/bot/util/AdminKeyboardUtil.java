@@ -54,7 +54,10 @@ public class AdminKeyboardUtil {
 
     public static InlineKeyboardMarkup getInlineUVMasjidKeyboard(MasjidDTO masjid) {
         return InlineKeyboardMarkup.builder()
-                .keyboard(List.of(new InlineKeyboardRow(masjidInlineKeyboardButton.apply(masjid))))
+                .keyboard(List.of(
+                        masjidLocationRow(masjid),
+                        masjidActionRow(masjidInlineKeyboardButton, masjid)
+                ))
                 .build();
     }
 
@@ -168,4 +171,32 @@ public class AdminKeyboardUtil {
                     .text(command.getText())
                     .requestContact(true)
                     .build();
+
+
+
+    private static InlineKeyboardRow masjidLocationRow(MasjidDTO masjid) {
+        return new InlineKeyboardRow(getInlineKeyboardButtonMasjid(masjid));
+    }
+
+    private static InlineKeyboardRow masjidActionRow(Function<MasjidDTO, InlineKeyboardButton> action,
+                                                     MasjidDTO masjid) {
+        return new InlineKeyboardRow(action.apply(masjid));
+    }
+
+
+
+    private static InlineKeyboardButton getInlineKeyboardButtonMasjid(MasjidDTO dto) {
+        var text = dto.distance() == null ?
+                CallbackCommand.SELECTED_MJ_LOCATION.getFullText()
+                        .replace("{km}", "nomalum") :
+                CallbackCommand.SELECTED_MJ_LOCATION.getFullText()
+                        .replace("{km}", dto.distance().toString());
+
+        return InlineKeyboardButton
+                .builder()
+                .text(text)
+                .callbackData(CallbackCommand.SELECTED_MJ_LOCATION.getText() + "_" + dto.id())
+                .build();
+    }
+
 }
