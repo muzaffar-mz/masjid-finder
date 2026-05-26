@@ -44,7 +44,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: APP_TAG,DB_USER,DB_PASSWORD,DB_NAME,TELEGRAM_BOT_TOKEN
+          envs: APP_TAG,DB_USER,DB_PASSWORD,DB_NAME,TELEGRAM_USER_TOKEN,TELEGRAM_ADMIN_TOKEN
           script: |
             cd ~/masjid-bot
             docker compose pull app
@@ -55,4 +55,5 @@ jobs:
           DB_USER: ${{ vars.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ vars.DB_NAME }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_USER_TOKEN: ${{ secrets.TELEGRAM_USER_TOKEN }}
+          TELEGRAM_ADMIN_TOKEN: ${{ secrets.TELEGRAM_ADMIN_TOKEN }}
