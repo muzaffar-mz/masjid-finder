@@ -60,5 +60,5 @@ jobs:
           DB_USER: ${{ vars.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ vars.DB_NAME }}
-          TELEGRAM_USER_TOKEN: ${{ secrets.TELEGRAM_USER_TOKEN }}
-          TELEGRAM_ADMIN_TOKEN: ${{ secrets.TELEGRAM_ADMIN_TOKEN }}
+          TELEGRAM_USER_TOKEN: ${{ secrets.TELEGARM_USER_TOKEN }}
+          TELEGRAM_ADMIN_TOKEN: ${{ secrets.TELEGARM_ADMIN_TOKEN }}
